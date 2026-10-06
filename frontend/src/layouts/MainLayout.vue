@@ -15,7 +15,7 @@ const salir = () => {
 </script>
 
 <template>
-  <q-layout view="lHh Lpr lFf">
+  <q-layout view="hHh lpR fFf">
     <q-header class="app-header">
       <q-toolbar>
         <q-btn flat dense round icon="menu" class="menu-btn" @click="menu = !menu" />

@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, nextTick } from 'vue'
 import { usuariosService } from '../services/usuarios.service'
 import { useNotify } from '../composables/useNotify'
 import ErrorList from '../components/shared/ErrorList.vue'
@@ -23,6 +23,7 @@ const guardar = async () => {
     const { data } = await usuariosService.registrar(form.value)
     ok(data.msg)
     form.value = { nombre: '', email: '', password: '' }
+    await nextTick()
     formRef.value?.resetValidation()
   } catch (e) {
     errores.value = listaErrores(e)
