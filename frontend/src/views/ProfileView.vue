@@ -15,6 +15,7 @@ const misSolicitudes = computed(() =>
 onMounted(recargar)
 
 const form = ref({
+  documento: auth.usuario?.documento ?? '',
   nombre: auth.usuario?.nombre ?? '',
   email: auth.usuario?.email ?? '',
   password: '',
