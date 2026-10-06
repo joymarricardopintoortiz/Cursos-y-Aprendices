@@ -7,8 +7,9 @@ const props = defineProps({
   loading: Boolean,
   filtro: { type: String, default: '' },
   admin: { type: Boolean, default: true },
+  matriculadosIds: { type: Array, default: () => [] },
 })
-const emit = defineEmits(['editar', 'activar', 'desactivar'])
+const emit = defineEmits(['editar', 'activar', 'desactivar', 'matricular'])
 
 const paginacion = ref({ rowsPerPage: 10 })
 
@@ -20,7 +21,12 @@ const columnas = computed(() => {
     { name: 'status', label: 'Estado', field: 'status', align: 'center' },
     { name: 'acciones', label: 'Acciones', field: '_id', align: 'center' },
   ]
-  return props.admin ? base : base.filter((c) => c.name !== 'acciones')
+  return props.admin
+    ? base
+    : [
+        ...base.filter((c) => c.name !== 'acciones'),
+        { name: 'matricula', label: 'Matrícula', field: '_id', align: 'center' },
+      ]
 })
 </script>
 
@@ -40,6 +46,20 @@ const columnas = computed(() => {
     <template #body-cell-status="p">
       <q-td :props="p">
         <estado-badge :status="p.row.status" />
+      </q-td>
+    </template>
+    <template #body-cell-matricula="p">
+      <q-td :props="p">
+        <q-btn
+          v-if="matriculadosIds.includes(p.row._id)"
+          unelevated
+          disabled
+          dense
+          icon="how_to_reg"
+          label="Solicitado"
+          color="grey-5"
+        />
+        <q-btn v-else unelevated color="primary" dense icon="how_to_reg" label="Matricularme" @click="emit('matricular', p.row)" />
       </q-td>
     </template>
     <template #body-cell-acciones="p">

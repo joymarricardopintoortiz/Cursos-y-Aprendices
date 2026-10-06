@@ -272,6 +272,13 @@ body {
   grid-column: 1 / -1;
 }
 
+.profile-sub {
+  margin: 24px 0 8px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #2b6e00;
+}
+
 .form-usuario {
   max-width: 480px;
   padding: 20px;

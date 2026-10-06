@@ -18,7 +18,14 @@ const routes = [
     children: [
       { path: '', name: 'home', component: () => import('../views/HomeView.vue') },
       { path: 'cursos', name: 'cursos', component: () => import('../views/CursosView.vue') },
-      { path: 'aprendices', name: 'aprendices', component: () => import('../views/AprendicesView.vue') },
+      { path: 'aprendices', name: 'aprendices', component: () => import('../views/AprendicesView.vue'), meta: { admin: true } },
+      {
+        path: 'solicitudes',
+        name: 'solicitudes',
+        component: () => import('../views/SolicitudesView.vue'),
+        meta: { admin: true },
+      },
+      { path: 'perfil', name: 'perfil', component: () => import('../views/ProfileView.vue') },
       {
         path: 'usuarios',
         name: 'usuarios',

@@ -1,14 +1,17 @@
 <script setup>
-import { ref, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { cursosService } from '../services/cursos.service'
 import { useNotify } from '../composables/useNotify'
 import { useAuthStore } from '../stores/auth'
+import { useSolicitudes } from '../composables/useSolicitudes'
+import { useQuasar } from 'quasar'
 import TablaCursos from '../components/cursos/TablaCursos.vue'
 import FormCurso from '../components/cursos/FormCurso.vue'
 import ConfirmDialog from '../components/shared/ConfirmDialog.vue'
 
 const { ok, error } = useNotify()
 const auth = useAuthStore()
+const $q = useQuasar()
 
 const cursos = ref([])
 const cargando = ref(false)
@@ -16,7 +19,38 @@ const buscar = ref('')
 const filtroEstado = ref(auth.esAdmin ? null : 0)
 const dialogoForm = ref(false)
 const dialogoConfirm = ref(false)
+const dialogoMatricula = ref(false)
 const seleccionado = ref(null)
+const { crearSolicitud, solicitudes, recargar } = useSolicitudes()
+
+const matriculadosIds = computed(() =>
+  solicitudes.value
+    .filter((s) => s.usuarioEmail === auth.usuario?.email && s.estado !== 'rechazada')
+    .map((s) => s.cursoId),
+)
+
+const pedirMatricula = (curso) => {
+  seleccionado.value = curso
+  $q.dialog({
+    title: 'Matricularme',
+    message: `¿Desea matricularse en el curso "${curso.nombre}"? Se enviará una solicitud al administrador para su aprobación.`,
+    ok: 'Matricularme',
+    cancel: 'Cancelar',
+    persistent: false,
+  }).onOk(confirmarMatricula)
+}
+
+const confirmarMatricula = () => {
+  const creada = crearSolicitud({
+    usuarioNombre: auth.usuario?.nombre,
+    usuarioEmail: auth.usuario?.email,
+    cursoId: seleccionado.value._id,
+    cursoNombre: seleccionado.value.nombre,
+  })
+  if (creada) {
+    ok('Solicitud de matrícula enviada. Espera la confirmación del administrador.')
+  }
+}
 
 const opcionesEstado = [
   { label: 'Todos', value: null },
@@ -77,7 +111,10 @@ const activar = async (curso) => {
 }
 
 watch(filtroEstado, cargar)
-onMounted(cargar)
+onMounted(() => {
+  cargar()
+  recargar()
+})
 </script>
 
 <template>
@@ -102,9 +139,11 @@ onMounted(cargar)
       :loading="cargando"
       :filtro="buscar || ''"
       :admin="auth.esAdmin"
+      :matriculados-ids="matriculadosIds"
       @editar="editar"
       @activar="activar"
       @desactivar="pedirDesactivar"
+      @matricular="pedirMatricula"
     />
 
     <q-dialog v-model="dialogoForm" persistent>
