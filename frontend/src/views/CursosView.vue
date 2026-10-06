@@ -9,7 +9,7 @@ import TablaCursos from '../components/cursos/TablaCursos.vue'
 import FormCurso from '../components/cursos/FormCurso.vue'
 import ConfirmDialog from '../components/shared/ConfirmDialog.vue'
 
-const { ok, error } = useNotify()
+const { ok, error, aviso } = useNotify()
 const auth = useAuthStore()
 const $q = useQuasar()
 
@@ -93,7 +93,7 @@ const pedirDesactivar = (curso) => {
 const desactivar = async () => {
   try {
     const { data } = await cursosService.desactivar(seleccionado.value._id)
-    ok(data.msg)
+    aviso(data.msg)
     cargar()
   } catch (e) {
     error(e)
@@ -154,6 +154,7 @@ onMounted(() => {
       v-model="dialogoConfirm"
       :mensaje="`¿Desea desactivar el curso ${seleccionado?.nombre ?? ''}?`"
       texto-boton="Desactivar"
+      tipo="aviso"
       @confirmar="desactivar"
     />
   </q-page>

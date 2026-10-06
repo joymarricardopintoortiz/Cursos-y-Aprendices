@@ -138,6 +138,16 @@ body {
   border-radius: var(--radio);
 }
 
+.tabla-contorno th,
+.tabla-contorno td {
+  border: 1px solid var(--borde);
+}
+
+.tabla-contorno th {
+  background: rgba(57, 169, 0, 0.08);
+  color: #2b6e00;
+}
+
 .stats {
   position: relative;
   display: grid;

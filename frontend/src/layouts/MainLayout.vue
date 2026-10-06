@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { useSolicitudes } from '../composables/useSolicitudes'
@@ -16,6 +16,10 @@ const salir = () => {
 }
 
 const { solicitudes, recargar, marcarVista } = useSolicitudes()
+
+const pendientes = computed(
+  () => solicitudes.value.filter((s) => s.estado === 'pendiente').length,
+)
 
 onMounted(() => {
   recargar()
@@ -60,6 +64,11 @@ onMounted(() => {
         <q-item v-if="auth.esAdmin" clickable v-ripple to="/solicitudes" active-class="item-activo">
           <q-item-section avatar><q-icon name="event_available" /></q-item-section>
           <q-item-section>Solicitudes</q-item-section>
+          <q-item-section side>
+            <q-badge v-if="pendientes > 0" color="negative" rounded>
+              {{ pendientes }}
+            </q-badge>
+          </q-item-section>
         </q-item>
         <q-item v-if="!auth.esAdmin" clickable v-ripple to="/perfil" active-class="item-activo">
           <q-item-section avatar><q-icon name="person" /></q-item-section>

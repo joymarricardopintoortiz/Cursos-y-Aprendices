@@ -12,9 +12,9 @@ const leer = () => {
 
 const guardar = (lista) => localStorage.setItem(KEY, JSON.stringify(lista))
 
-export function useSolicitudes() {
-  const solicitudes = ref(leer())
+const solicitudes = ref(leer())
 
+export function useSolicitudes() {
   const recargar = () => {
     solicitudes.value = leer()
   }

@@ -1,9 +1,12 @@
 <script setup>
+import { computed } from 'vue'
 import { useSolicitudes } from '../composables/useSolicitudes'
 import { useNotify } from '../composables/useNotify'
 
 const { solicitudes, recargar, cambiarEstado } = useSolicitudes()
 const { ok } = useNotify()
+
+const pendientesCount = computed(() => solicitudes.value.filter((s) => s.estado === 'pendiente').length)
 
 const columnas = [
   { name: 'usuario', label: 'Usuario', field: 'usuarioNombre', align: 'left' },
@@ -32,12 +35,18 @@ const rechazar = (s) => {
         <h1 class="page-title">Solicitudes de matrícula</h1>
         <p class="page-sub">Aceptar o rechazar las solicitudes de los aprendices</p>
       </div>
-      <q-btn flat color="primary" icon="refresh" label="Actualizar" @click="recargar" />
+      <div class="row items-center q-gutter-sm">
+        <q-badge v-if="pendientesCount > 0" color="negative" rounded style="font-size: 15px; padding: 4px 10px">
+          {{ pendientesCount }} pendientes
+        </q-badge>
+        <q-btn flat color="primary" icon="refresh" label="Actualizar" @click="recargar" />
+      </div>
     </div>
 
     <q-table
-      class="tabla"
+      class="tabla tabla-contorno"
       flat
+      bordered
       row-key="id"
       :rows="solicitudes"
       :columns="columnas"

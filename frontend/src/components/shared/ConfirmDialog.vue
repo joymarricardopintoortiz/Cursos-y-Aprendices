@@ -3,6 +3,7 @@ defineProps({
   modelValue: Boolean,
   mensaje: { type: String, default: '' },
   textoBoton: { type: String, default: 'Confirmar' },
+  tipo: { type: String, default: 'negative' },
 })
 const emit = defineEmits(['update:modelValue', 'confirmar'])
 </script>

@@ -4,9 +4,11 @@ import { useAuthStore } from '../stores/auth'
 import { cursosService } from '../services/cursos.service'
 import { aprendicesService } from '../services/aprendices.service'
 import { useNotify } from '../composables/useNotify'
+import { useSolicitudes } from '../composables/useSolicitudes'
 
 const auth = useAuthStore()
 const { error } = useNotify()
+const { solicitudes, recargar } = useSolicitudes()
 
 const cursos = ref([])
 const aprendices = ref([])
@@ -22,11 +24,21 @@ const tarjetas = computed(() =>
       ]
     : [
         { titulo: 'Cursos disponibles', valor: cursos.value.length, icono: 'menu_book' },
-        { titulo: 'Aprendices activos', valor: aprendices.value.length, icono: 'groups' },
+        {
+          titulo: 'Solicitudes aceptadas',
+          valor: solicitudes.value.filter((s) => s.usuarioEmail === auth.usuario?.email && s.estado === 'aceptada').length,
+          icono: 'check_circle',
+        },
+        {
+          titulo: 'Solicitudes rechazadas',
+          valor: solicitudes.value.filter((s) => s.usuarioEmail === auth.usuario?.email && s.estado === 'rechazada').length,
+          icono: 'cancel',
+        },
       ],
 )
 
 onMounted(async () => {
+  recargar()
   cargando.value = true
   try {
     const [c, a] = await Promise.all([

@@ -57,7 +57,7 @@ const guardar = () => {
         dense
         v-model="form.password"
         :type="verClave ? 'text' : 'password'"
-        label="Nueva contraseña (opcional)"
+        label="Nueva contraseña"
         :rules="[minimo]"
       >
         <template #append>

@@ -5,6 +5,10 @@ export function useNotify() {
     Notify.create({ type: 'positive', message: msg, icon: 'check_circle' })
   }
 
+  const aviso = (msg) => {
+    Notify.create({ message: msg, icon: 'warning', color: 'yellow-4', textColor: 'black' })
+  }
+
   const listaErrores = (e) => {
     const lista = e.response?.data?.errors
     if (lista?.length) return lista
@@ -17,5 +21,5 @@ export function useNotify() {
     return lista
   }
 
-  return { ok, error, listaErrores }
+  return { ok, error, listaErrores, aviso }
 }
