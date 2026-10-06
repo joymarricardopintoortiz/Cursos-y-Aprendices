@@ -3,17 +3,19 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { aprendicesService } from '../services/aprendices.service'
 import { cursosService } from '../services/cursos.service'
 import { useNotify } from '../composables/useNotify'
+import { useAuthStore } from '../stores/auth'
 import TablaAprendices from '../components/aprendices/TablaAprendices.vue'
 import FormAprendiz from '../components/aprendices/FormAprendiz.vue'
 import ConfirmDialog from '../components/shared/ConfirmDialog.vue'
 
 const { ok, error } = useNotify()
+const auth = useAuthStore()
 
 const aprendices = ref([])
 const cursos = ref([])
 const cargando = ref(false)
 const buscar = ref('')
-const filtroEstado = ref(null)
+const filtroEstado = ref(auth.esAdmin ? null : 0)
 const filtroCurso = ref(null)
 const dialogoForm = ref(false)
 const dialogoConfirm = ref(false)
@@ -36,7 +38,7 @@ const cargar = async () => {
     const { data } = filtroCurso.value
       ? await aprendicesService.porCurso(filtroCurso.value)
       : await aprendicesService.listar(filtroEstado.value ?? undefined)
-    aprendices.value = data
+    aprendices.value = auth.esAdmin ? data : data.filter((a) => a.status === 0)
   } catch (e) {
     error(e)
   } finally {
@@ -46,7 +48,7 @@ const cargar = async () => {
 
 const cargarCursos = async () => {
   try {
-    const { data } = await cursosService.listar()
+    const { data } = await cursosService.listar(auth.esAdmin ? undefined : 0)
     cursos.value = data
   } catch (e) {
     error(e)
@@ -106,9 +108,9 @@ onMounted(() => {
     <div class="page-head">
       <div>
         <h1 class="page-title">Aprendices</h1>
-        <p class="page-sub">Gestión de aprendices por curso</p>
+        <p class="page-sub">{{ auth.esAdmin ? 'Gestión de aprendices por curso' : 'Aprendices activos' }}</p>
       </div>
-      <q-btn unelevated color="primary" icon="add" label="Nuevo aprendiz" @click="nuevo" />
+      <q-btn v-if="auth.esAdmin" unelevated color="primary" icon="add" label="Nuevo aprendiz" @click="nuevo" />
     </div>
 
     <div class="filtros">
@@ -117,6 +119,7 @@ onMounted(() => {
       </q-input>
       <q-select outlined dense v-model="filtroCurso" :options="opcionesCurso" label="Curso" emit-value map-options />
       <q-select
+        v-if="auth.esAdmin"
         outlined
         dense
         v-model="filtroEstado"
@@ -132,6 +135,7 @@ onMounted(() => {
       :rows="aprendices"
       :loading="cargando"
       :filtro="buscar || ''"
+      :admin="auth.esAdmin"
       @editar="editar"
       @activar="activar"
       @desactivar="pedirDesactivar"

@@ -1,24 +1,28 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import EstadoBadge from '../shared/EstadoBadge.vue'
 
-defineProps({
+const props = defineProps({
   rows: { type: Array, default: () => [] },
   loading: Boolean,
   filtro: { type: String, default: '' },
+  admin: { type: Boolean, default: true },
 })
 const emit = defineEmits(['editar', 'activar', 'desactivar'])
 
 const paginacion = ref({ rowsPerPage: 10 })
 
-const columnas = [
-  { name: 'documento', label: 'Documento', field: 'documento', align: 'left', sortable: true },
-  { name: 'nombre', label: 'Nombre', field: 'nombre', align: 'left', sortable: true },
-  { name: 'email', label: 'Email', field: 'email', align: 'left', sortable: true },
-  { name: 'curso', label: 'Curso', field: (row) => row.curso?.nombre ?? 'Sin curso', align: 'left', sortable: true },
-  { name: 'status', label: 'Estado', field: 'status', align: 'center' },
-  { name: 'acciones', label: 'Acciones', field: '_id', align: 'center' },
-]
+const columnas = computed(() => {
+  const base = [
+    { name: 'documento', label: 'Documento', field: 'documento', align: 'left', sortable: true },
+    { name: 'nombre', label: 'Nombre', field: 'nombre', align: 'left', sortable: true },
+    { name: 'email', label: 'Email', field: 'email', align: 'left', sortable: true },
+    { name: 'curso', label: 'Curso', field: (row) => row.curso?.nombre ?? 'Sin curso', align: 'left', sortable: true },
+    { name: 'status', label: 'Estado', field: 'status', align: 'center' },
+    { name: 'acciones', label: 'Acciones', field: '_id', align: 'center' },
+  ]
+  return props.admin ? base : base.filter((c) => c.name !== 'acciones')
+})
 </script>
 
 <template>

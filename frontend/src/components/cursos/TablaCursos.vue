@@ -1,23 +1,27 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import EstadoBadge from '../shared/EstadoBadge.vue'
 
-defineProps({
+const props = defineProps({
   rows: { type: Array, default: () => [] },
   loading: Boolean,
   filtro: { type: String, default: '' },
+  admin: { type: Boolean, default: true },
 })
 const emit = defineEmits(['editar', 'activar', 'desactivar'])
 
 const paginacion = ref({ rowsPerPage: 10 })
 
-const columnas = [
-  { name: 'codigo', label: 'Código', field: 'codigo', align: 'left', sortable: true },
-  { name: 'nombre', label: 'Nombre', field: 'nombre', align: 'left', sortable: true },
-  { name: 'duracion', label: 'Duración (h)', field: 'duracion', align: 'center', sortable: true },
-  { name: 'status', label: 'Estado', field: 'status', align: 'center' },
-  { name: 'acciones', label: 'Acciones', field: '_id', align: 'center' },
-]
+const columnas = computed(() => {
+  const base = [
+    { name: 'codigo', label: 'Código', field: 'codigo', align: 'left', sortable: true },
+    { name: 'nombre', label: 'Nombre', field: 'nombre', align: 'left', sortable: true },
+    { name: 'duracion', label: 'Duración (h)', field: 'duracion', align: 'center', sortable: true },
+    { name: 'status', label: 'Estado', field: 'status', align: 'center' },
+    { name: 'acciones', label: 'Acciones', field: '_id', align: 'center' },
+  ]
+  return props.admin ? base : base.filter((c) => c.name !== 'acciones')
+})
 </script>
 
 <template>

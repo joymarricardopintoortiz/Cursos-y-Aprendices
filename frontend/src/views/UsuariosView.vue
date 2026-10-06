@@ -38,7 +38,7 @@ const guardar = async () => {
     <div class="page-head">
       <div>
         <h1 class="page-title">Usuarios</h1>
-        <p class="page-sub">Crear nuevas cuentas de acceso</p>
+        <p class="page-sub">Crear cuentas de acceso para aprendices</p>
       </div>
     </div>
 
