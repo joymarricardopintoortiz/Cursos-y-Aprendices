@@ -9,7 +9,7 @@ const emit = defineEmits(['update:modelValue', 'confirmar'])
 </script>
 
 <template>
-  <q-dialog :model-value="modelValue" @update:model-value="emit('update:modelValue', $event)">
+  <q-dialog persistent :model-value="modelValue" @update:model-value="emit('update:modelValue', $event)">
     <q-card class="dialog-card dialog-chico">
       <q-card-section class="dialog-titulo">Confirmar acción</q-card-section>
       <q-card-section>{{ mensaje }}</q-card-section>

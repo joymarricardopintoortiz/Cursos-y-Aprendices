@@ -19,7 +19,6 @@ const buscar = ref('')
 const filtroEstado = ref(auth.esAdmin ? null : 0)
 const dialogoForm = ref(false)
 const dialogoConfirm = ref(false)
-const dialogoMatricula = ref(false)
 const seleccionado = ref(null)
 const { crearSolicitud, solicitudes, recargar } = useSolicitudes()
 
@@ -36,7 +35,7 @@ const pedirMatricula = (curso) => {
     message: `¿Desea matricularse en el curso "${curso.nombre}"? Se enviará una solicitud al administrador para su aprobación.`,
     ok: 'Matricularme',
     cancel: 'Cancelar',
-    persistent: false,
+    persistent: true,
   }).onOk(confirmarMatricula)
 }
 
