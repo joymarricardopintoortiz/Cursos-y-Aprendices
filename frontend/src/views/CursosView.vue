@@ -33,16 +33,22 @@ const pedirMatricula = (curso) => {
   $q.dialog({
     title: 'Matricularme',
     message: `¿Desea matricularse en el curso "${curso.nombre}"? Se enviará una solicitud al administrador para su aprobación.`,
+    prompt: {
+      model: auth.documento || '',
+      label: 'Documento',
+      isValid: (val) => /^\d{6,12}$/.test(val),
+    },
     ok: 'Matricularme',
     cancel: 'Cancelar',
     persistent: true,
-  }).onOk(confirmarMatricula)
+  }).onOk((documento) => confirmarMatricula(documento))
 }
 
-const confirmarMatricula = () => {
+const confirmarMatricula = (documento) => {
   const creada = crearSolicitud({
     usuarioNombre: auth.usuario?.nombre,
     usuarioEmail: auth.usuario?.email,
+    usuarioDocumento: documento.trim(),
     cursoId: seleccionado.value._id,
     cursoNombre: seleccionado.value.nombre,
   })

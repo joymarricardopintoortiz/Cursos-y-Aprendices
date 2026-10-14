@@ -1,15 +1,18 @@
 <script setup>
 import { computed } from 'vue'
+import { Dialog } from 'quasar'
 import { useSolicitudes } from '../composables/useSolicitudes'
 import { useNotify } from '../composables/useNotify'
+import { aprendicesService } from '../services/aprendices.service'
 
 const { solicitudes, recargar, cambiarEstado } = useSolicitudes()
-const { ok } = useNotify()
+const { ok, error } = useNotify()
 
 const pendientesCount = computed(() => solicitudes.value.filter((s) => s.estado === 'pendiente').length)
 
 const columnas = [
   { name: 'usuario', label: 'Usuario', field: 'usuarioNombre', align: 'left' },
+  { name: 'documento', label: 'Documento', field: (row) => row.usuarioDocumento || '—', align: 'left' },
   { name: 'curso', label: 'Curso', field: 'cursoNombre', align: 'left' },
   { name: 'fecha', label: 'Fecha', field: 'fecha', align: 'left' },
   { name: 'estado', label: 'Estado', field: 'estado', align: 'center' },
@@ -18,10 +21,36 @@ const columnas = [
 
 recargar()
 
-const aceptar = (s) => {
-  cambiarEstado(s.id, 'aceptada')
-  ok(`Solicitud de ${s.usuarioNombre} aceptada`)
+const crearAprendiz = async (s, documento) => {
+  try {
+    await aprendicesService.crear({
+      documento,
+      nombre: s.usuarioNombre,
+      email: s.usuarioEmail,
+      curso: s.cursoId,
+    })
+    cambiarEstado(s.id, 'aceptada')
+    ok(`Solicitud aceptada. ${s.usuarioNombre} fue añadido a Aprendices`)
+  } catch (e) {
+    error(e)
+  }
 }
+
+const aceptar = (s) => {
+  if (s.usuarioDocumento) {
+    crearAprendiz(s, s.usuarioDocumento)
+    return
+  }
+  Dialog.create({
+    title: 'Documento del aprendiz',
+    message: `La solicitud de ${s.usuarioNombre} no tiene documento. Ingresa el documento para registrar al aprendiz:`,
+    prompt: { model: '', label: 'Documento', isValid: (val) => /^\d{6,12}$/.test(val) },
+    ok: 'Registrar',
+    cancel: 'Cancelar',
+    persistent: true,
+  }).onOk((documento) => crearAprendiz(s, documento.trim()))
+}
+
 const rechazar = (s) => {
   cambiarEstado(s.id, 'rechazada')
   ok(`Solicitud de ${s.usuarioNombre} rechazada`)

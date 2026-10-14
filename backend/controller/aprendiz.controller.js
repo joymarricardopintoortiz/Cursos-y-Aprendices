@@ -47,7 +47,9 @@ aprendizCtrl.getAprendizId = async (req, res) => {
 aprendizCtrl.getAprendicesByCurso = async (req, res) => {
   const { curso } = req.params;
   try {
-    const aprendices = await Aprendiz.find({ curso, status: 0 }).populate("curso");
+    const aprendices = await Aprendiz.find({ curso, status: 0 })
+      .populate("curso")
+      .sort({ createdAt: -1 });
     res.json(aprendices);
   } catch (error) {
     res.status(400).json({ msg: "No fue posible terminar la operacion" });

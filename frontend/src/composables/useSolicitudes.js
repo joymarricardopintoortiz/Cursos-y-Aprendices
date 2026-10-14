@@ -22,12 +22,13 @@ export function useSolicitudes() {
   const yaSolicitado = (email, cursoId) =>
     solicitudes.value.some((s) => s.usuarioEmail === email && s.cursoId === cursoId && s.estado !== 'rechazada')
 
-  const crearSolicitud = ({ usuarioNombre, usuarioEmail, cursoId, cursoNombre }) => {
+  const crearSolicitud = ({ usuarioNombre, usuarioEmail, usuarioDocumento, cursoId, cursoNombre }) => {
     if (yaSolicitado(usuarioEmail, cursoId)) return false
-    solicitudes.value.push({
+    solicitudes.value.unshift({
       id: Date.now(),
       usuarioNombre,
       usuarioEmail,
+      usuarioDocumento,
       cursoId,
       cursoNombre,
       estado: 'pendiente',
@@ -39,10 +40,13 @@ export function useSolicitudes() {
   }
 
   const cambiarEstado = (id, estado) => {
-    const s = solicitudes.value.find((x) => x.id === id)
-    if (s) {
+    const idx = solicitudes.value.findIndex((x) => x.id === id)
+    if (idx !== -1) {
+      const s = solicitudes.value[idx]
       s.estado = estado
       s.vista = false
+      solicitudes.value.splice(idx, 1)
+      solicitudes.value.unshift(s)
       guardar(solicitudes.value)
     }
   }
