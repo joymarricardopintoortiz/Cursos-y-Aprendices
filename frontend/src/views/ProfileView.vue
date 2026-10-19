@@ -1,18 +1,18 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useAuthStore } from '../stores/auth'
+import { useSolicitudesStore } from '../stores/solicitudes'
 import { useNotify } from '../composables/useNotify'
-import { useSolicitudes } from '../composables/useSolicitudes'
 
 const auth = useAuthStore()
 const { ok } = useNotify()
-const { solicitudes, recargar } = useSolicitudes()
+const solicitudesStore = useSolicitudesStore()
+const { solicitudes } = storeToRefs(solicitudesStore)
 
 const misSolicitudes = computed(() =>
   solicitudes.value.filter((s) => s.usuarioEmail === auth.usuario?.email),
 )
-
-onMounted(recargar)
 
 const form = ref({
   documento: auth.documento,

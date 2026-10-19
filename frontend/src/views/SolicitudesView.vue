@@ -1,11 +1,13 @@
 <script setup>
 import { computed } from 'vue'
+import { storeToRefs } from 'pinia'
 import { Dialog } from 'quasar'
-import { useSolicitudes } from '../composables/useSolicitudes'
+import { useSolicitudesStore } from '../stores/solicitudes'
 import { useNotify } from '../composables/useNotify'
 import { aprendicesService } from '../services/aprendices.service'
 
-const { solicitudes, recargar, cambiarEstado } = useSolicitudes()
+const solicitudesStore = useSolicitudesStore()
+const { solicitudes } = storeToRefs(solicitudesStore)
 const { ok, error } = useNotify()
 
 const pendientesCount = computed(() => solicitudes.value.filter((s) => s.estado === 'pendiente').length)
@@ -19,8 +21,6 @@ const columnas = [
   { name: 'acciones', label: 'Acciones', field: 'id', align: 'center' },
 ]
 
-recargar()
-
 const crearAprendiz = async (s, documento) => {
   try {
     await aprendicesService.crear({
@@ -29,7 +29,7 @@ const crearAprendiz = async (s, documento) => {
       email: s.usuarioEmail,
       curso: s.cursoId,
     })
-    cambiarEstado(s.id, 'aceptada')
+    solicitudesStore.cambiarEstado(s.id, 'aceptada')
     ok(`Solicitud aceptada. ${s.usuarioNombre} fue añadido a Aprendices`)
   } catch (e) {
     error(e)
@@ -52,7 +52,7 @@ const aceptar = (s) => {
 }
 
 const rechazar = (s) => {
-  cambiarEstado(s.id, 'rechazada')
+  solicitudesStore.cambiarEstado(s.id, 'rechazada')
   ok(`Solicitud de ${s.usuarioNombre} rechazada`)
 }
 </script>
@@ -68,7 +68,6 @@ const rechazar = (s) => {
         <q-badge v-if="pendientesCount > 0" color="negative" rounded style="font-size: 15px; padding: 4px 10px">
           {{ pendientesCount }} pendientes
         </q-badge>
-        <q-btn flat color="primary" icon="refresh" label="Actualizar" @click="recargar" />
       </div>
     </div>
 

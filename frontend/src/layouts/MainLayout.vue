@@ -1,8 +1,9 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia'
 import { useAuthStore } from '../stores/auth'
-import { useSolicitudes } from '../composables/useSolicitudes'
+import { useSolicitudesStore } from '../stores/solicitudes'
 import { Notify } from 'quasar'
 import logo from '../assets/logo-sena.png'
 
@@ -15,20 +16,20 @@ const salir = () => {
   router.push('/login')
 }
 
-const { solicitudes, recargar, marcarVista } = useSolicitudes()
+const solicitudesStore = useSolicitudesStore()
+const { solicitudes } = storeToRefs(solicitudesStore)
 
 const pendientes = computed(
   () => solicitudes.value.filter((s) => s.estado === 'pendiente').length,
 )
 
 onMounted(() => {
-  recargar()
   if (!auth.esAdmin) {
     solicitudes.value
       .filter((s) => s.usuarioEmail === auth.usuario?.email && s.estado === 'aceptada' && !s.vista)
       .forEach((s) => {
         Notify.create({ type: 'positive', message: `¡Felicidades! Tu solicitud al curso "${s.cursoNombre}" fue confirmada.`, icon: 'celebration' })
-        marcarVista(s.id)
+        solicitudesStore.marcarVista(s.id)
       })
   }
 })

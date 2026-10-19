@@ -1,9 +1,10 @@
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
 import { cursosService } from '../services/cursos.service'
 import { useNotify } from '../composables/useNotify'
 import { useAuthStore } from '../stores/auth'
-import { useSolicitudes } from '../composables/useSolicitudes'
+import { useSolicitudesStore } from '../stores/solicitudes'
 import { useQuasar } from 'quasar'
 import TablaCursos from '../components/cursos/TablaCursos.vue'
 import FormCurso from '../components/cursos/FormCurso.vue'
@@ -20,7 +21,8 @@ const filtroEstado = ref(auth.esAdmin ? null : 0)
 const dialogoForm = ref(false)
 const dialogoConfirm = ref(false)
 const seleccionado = ref(null)
-const { crearSolicitud, solicitudes, recargar } = useSolicitudes()
+const solicitudesStore = useSolicitudesStore()
+const { solicitudes } = storeToRefs(solicitudesStore)
 
 const matriculadosIds = computed(() =>
   solicitudes.value
@@ -29,26 +31,25 @@ const matriculadosIds = computed(() =>
 )
 
 const pedirMatricula = (curso) => {
+  if (!auth.documento) {
+    aviso('Debes registrar tu documento en tu perfil para poder matricularte. Ve a "Mi perfil" y guárdalo primero.')
+    return
+  }
   seleccionado.value = curso
   $q.dialog({
     title: 'Matricularme',
-    message: `¿Desea matricularse en el curso "${curso.nombre}"? Se enviará una solicitud al administrador para su aprobación.`,
-    prompt: {
-      model: auth.documento || '',
-      label: 'Documento',
-      isValid: (val) => /^\d{6,12}$/.test(val),
-    },
+    message: `¿Desea matricularse en el curso "${curso.nombre}"? Se usará tu documento "${auth.documento}" registrado en tu perfil y se enviará una solicitud al administrador para su aprobación.`,
     ok: 'Matricularme',
     cancel: 'Cancelar',
     persistent: true,
-  }).onOk((documento) => confirmarMatricula(documento))
+  }).onOk(() => confirmarMatricula())
 }
 
-const confirmarMatricula = (documento) => {
-  const creada = crearSolicitud({
+const confirmarMatricula = () => {
+  const creada = solicitudesStore.crearSolicitud({
     usuarioNombre: auth.usuario?.nombre,
     usuarioEmail: auth.usuario?.email,
-    usuarioDocumento: documento.trim(),
+    usuarioDocumento: auth.documento,
     cursoId: seleccionado.value._id,
     cursoNombre: seleccionado.value.nombre,
   })
@@ -118,7 +119,6 @@ const activar = async (curso) => {
 watch(filtroEstado, cargar)
 onMounted(() => {
   cargar()
-  recargar()
 })
 </script>
 

@@ -1,14 +1,16 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useAuthStore } from '../stores/auth'
+import { useSolicitudesStore } from '../stores/solicitudes'
 import { cursosService } from '../services/cursos.service'
 import { aprendicesService } from '../services/aprendices.service'
 import { useNotify } from '../composables/useNotify'
-import { useSolicitudes } from '../composables/useSolicitudes'
 
 const auth = useAuthStore()
 const { error } = useNotify()
-const { solicitudes, recargar } = useSolicitudes()
+const solicitudesStore = useSolicitudesStore()
+const { solicitudes } = storeToRefs(solicitudesStore)
 
 const cursos = ref([])
 const aprendices = ref([])
@@ -38,7 +40,6 @@ const tarjetas = computed(() =>
 )
 
 onMounted(async () => {
-  recargar()
   cargando.value = true
   try {
     const [c, a] = await Promise.all([
