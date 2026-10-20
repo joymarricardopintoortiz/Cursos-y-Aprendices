@@ -39,7 +39,7 @@ const ingresar = async () => {
     <img :src="logo" alt="SENA" class="auth-logo" />
     <h1 class="auth-title">Iniciar sesión</h1>
     <p class="auth-sub">Cursos y Aprendices</p>
-    <q-form class="form-col" @submit="ingresar">
+    <q-form novalidate class="form-col" @submit="ingresar">
       <q-input outlined v-model="form.email" type="email" label="Correo" :rules="[req, emailValido]" />
       <q-input outlined v-model="form.password" :type="verClave ? 'text' : 'password'" label="Contraseña" :rules="[req]">
         <template #append>

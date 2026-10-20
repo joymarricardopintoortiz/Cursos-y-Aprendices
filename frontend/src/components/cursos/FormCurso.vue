@@ -41,7 +41,7 @@ const guardar = async () => {
 
 <template>
   <q-card class="dialog-card">
-    <q-form @submit="guardar">
+    <q-form novalidate @submit="guardar">
       <q-card-section class="dialog-titulo">{{ curso ? 'Editar curso' : 'Nuevo curso' }}</q-card-section>
       <q-card-section class="form-grid">
         <q-input outlined dense v-model="form.codigo" label="Código" :rules="[req]" />

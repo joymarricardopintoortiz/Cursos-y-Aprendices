@@ -56,7 +56,7 @@ const guardar = () => {
       </div>
     </div>
 
-    <q-form class="form-usuario form-col" @submit="guardar">
+    <q-form novalidate class="form-usuario form-col" @submit="guardar">
       <q-input outlined dense v-model="form.documento" label="Numero de documento" inputmode="numeric" maxlength="12" :rules="[req, documentoValido]"/>
       <q-input outlined dense v-model="form.nombre" label="Nombre" :rules="[req]" />
       <q-input outlined dense v-model="form.email" type="email" label="Correo" :rules="[req, emailValido]" />

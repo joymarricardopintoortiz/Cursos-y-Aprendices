@@ -49,7 +49,7 @@ const crearUsuario = async () => {
       </div>
     </div>
 
-    <q-form ref="formRef" class="form-usuario form-col" @submit="guardar">
+    <q-form ref="formRef" novalidate class="form-usuario form-col" @submit="guardar">
       <q-input outlined dense v-model="form.nombre" label="Nombre" :rules="[req]" />
       <q-input outlined dense v-model="form.email" type="email" label="Correo" :rules="[req, emailValido]" />
       <q-input
