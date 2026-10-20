@@ -14,6 +14,9 @@ const misSolicitudes = computed(() =>
   solicitudes.value.filter((s) => s.usuarioEmail === auth.usuario?.email),
 )
 
+const etiquetaEstado = (estado) =>
+  estado === 'aceptada' ? 'Aceptado' : estado === 'rechazada' ? 'Rechazado' : 'Pendiente'
+
 const form = ref({
   documento: auth.documento,
   nombre: auth.usuario?.nombre ?? '',
@@ -81,7 +84,7 @@ const guardar = () => {
         </q-item-section>
         <q-item-section side>
           <q-badge :color="s.estado === 'aceptada' ? 'positive' : s.estado === 'rechazada' ? 'negative' : 'warning'">
-            {{ s.estado }}
+            {{ etiquetaEstado(s.estado) }}
           </q-badge>
         </q-item-section>
       </q-item>

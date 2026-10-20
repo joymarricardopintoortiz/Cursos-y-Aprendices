@@ -28,7 +28,7 @@ onMounted(() => {
     solicitudes.value
       .filter((s) => s.usuarioEmail === auth.usuario?.email && s.estado === 'aceptada' && !s.vista)
       .forEach((s) => {
-        Notify.create({ type: 'positive', message: `¡Felicidades! Tu solicitud al curso "${s.cursoNombre}" fue confirmada.`, icon: 'celebration' })
+        Notify.create({ type: 'positive', message: `¡Felicidades! Se confirmó tu solicitud al curso "${s.cursoNombre}".`, icon: 'celebration' })
         solicitudesStore.marcarVista(s.id)
       })
   }

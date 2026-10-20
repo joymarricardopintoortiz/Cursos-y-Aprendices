@@ -25,15 +25,15 @@ const tarjetas = computed(() =>
         { titulo: 'Aprendices', valor: aprendices.value.length, icono: 'groups', clase: 'stat-card--azul' },
         { titulo: 'Aprendices activos', valor: aprendices.value.filter((a) => a.status === 0).length, icono: 'how_to_reg', clase: 'stat-card--azul-claro' },
         { titulo: 'Aprendices inactivos', valor: aprendices.value.filter((a) => a.status === 1).length, icono: 'person_off', clase: 'stat-card--gris-azulado' },
-        { titulo: 'Solicitudes enviadas', valor: solicitudes.value.length, icono: 'send', clase: 'stat-card--amarillo' },
+        { titulo: 'Solicitudes enviadas', valor: solicitudes.value.filter((s) => s.estado === 'pendiente').length, icono: 'send', clase: 'stat-card--amarillo' },
         {
-          titulo: 'Solicitudes aceptadas',
+          titulo: 'Aceptados',
           valor: solicitudes.value.filter((s) => s.estado === 'aceptada').length,
           icono: 'check_circle',
           clase: 'stat-card--verde',
         },
         {
-          titulo: 'Solicitudes rechazadas',
+          titulo: 'Rechazados',
           valor: solicitudes.value.filter((s) => s.estado === 'rechazada').length,
           icono: 'cancel',
           clase: 'stat-card--rojo',
@@ -42,13 +42,13 @@ const tarjetas = computed(() =>
     : [
         { titulo: 'Cursos disponibles', valor: cursos.value.length, icono: 'menu_book', clase: 'stat-card--azul' },
         {
-          titulo: 'Solicitudes aceptadas',
+          titulo: 'Aceptados',
           valor: solicitudes.value.filter((s) => s.usuarioEmail === auth.usuario?.email && s.estado === 'aceptada').length,
           icono: 'check_circle',
           clase: 'stat-card--verde',
         },
         {
-          titulo: 'Solicitudes rechazadas',
+          titulo: 'Rechazados',
           valor: solicitudes.value.filter((s) => s.usuarioEmail === auth.usuario?.email && s.estado === 'rechazada').length,
           icono: 'cancel',
           clase: 'stat-card--rojo',

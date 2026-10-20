@@ -1,14 +1,19 @@
 <script setup>
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { Dialog } from 'quasar'
 import { useSolicitudesStore } from '../stores/solicitudes'
 import { useNotify } from '../composables/useNotify'
 import { aprendicesService } from '../services/aprendices.service'
+import ConfirmDialog from '../components/shared/ConfirmDialog.vue'
 
 const solicitudesStore = useSolicitudesStore()
 const { solicitudes } = storeToRefs(solicitudesStore)
 const { ok, error } = useNotify()
+
+const dialogoConfirm = ref(false)
+const accionConfirm = ref('aceptar')
+const seleccionada = ref(null)
 
 const pendientesCount = computed(() => solicitudes.value.filter((s) => s.estado === 'pendiente').length)
 
@@ -21,6 +26,9 @@ const columnas = [
   { name: 'acciones', label: 'Acciones', field: 'id', align: 'center' },
 ]
 
+const etiquetaEstado = (estado) =>
+  estado === 'aceptada' ? 'Aceptado' : estado === 'rechazada' ? 'Rechazado' : 'Pendiente'
+
 const crearAprendiz = async (s, documento) => {
   try {
     await aprendicesService.crear({
@@ -30,7 +38,7 @@ const crearAprendiz = async (s, documento) => {
       curso: s.cursoId,
     })
     solicitudesStore.cambiarEstado(s.id, 'aceptada')
-    ok(`Solicitud aceptada. ${s.usuarioNombre} fue añadido a Aprendices`)
+    ok(`Se aceptó la solicitud de ${s.usuarioNombre} y se registró en Aprendices`)
   } catch (e) {
     error(e)
   }
@@ -53,7 +61,28 @@ const aceptar = (s) => {
 
 const rechazar = (s) => {
   solicitudesStore.cambiarEstado(s.id, 'rechazada')
-  ok(`Solicitud de ${s.usuarioNombre} rechazada`)
+  ok(`Se rechazó la solicitud de ${s.usuarioNombre}`)
+}
+
+const pedirConfirmacion = (s, accion) => {
+  seleccionada.value = s
+  accionConfirm.value = accion
+  dialogoConfirm.value = true
+}
+
+const mensajeConfirm = computed(() => {
+  if (!seleccionada.value) return ''
+  return accionConfirm.value === 'aceptar'
+    ? `¿Desea aceptar la solicitud de ${seleccionada.value.usuarioNombre} para el curso ${seleccionada.value.cursoNombre}?`
+    : `¿Desea rechazar la solicitud de ${seleccionada.value.usuarioNombre}?`
+})
+
+const confirmarAccion = () => {
+  if (accionConfirm.value === 'aceptar') {
+    aceptar(seleccionada.value)
+  } else {
+    rechazar(seleccionada.value)
+  }
 }
 </script>
 
@@ -83,18 +112,36 @@ const rechazar = (s) => {
     >
       <template #body-cell-estado="p">
         <q-td :props="p">
-          <q-badge :color="p.row.estado === 'aceptada' ? 'positive' : p.row.estado === 'rechazada' ? 'negative' : 'warning'">
-            {{ p.row.estado }}
+          <q-badge
+            :color="p.row.estado === 'aceptada' ? 'positive' : p.row.estado === 'rechazada' ? 'negative' : 'warning'"
+            :text-color="p.row.estado === 'pendiente' ? 'dark' : 'white'"
+            rounded
+            class="text-weight-bold q-px-sm q-py-xs"
+          >
+            <q-icon
+              :name="p.row.estado === 'aceptada' ? 'check_circle' : p.row.estado === 'rechazada' ? 'cancel' : 'schedule'"
+              size="14px"
+              class="q-mr-xs"
+            />
+            {{ etiquetaEstado(p.row.estado) }}
           </q-badge>
         </q-td>
       </template>
       <template #body-cell-acciones="p">
         <q-td :props="p">
-          <q-btn v-if="p.row.estado === 'pendiente'" flat round dense icon="check_circle" color="positive" title="Aceptar" @click="aceptar(p.row)" />
-          <q-btn v-if="p.row.estado === 'pendiente'" flat round dense icon="cancel" color="negative" title="Rechazar" @click="rechazar(p.row)" />
-          <span v-else class="text-grey">Finalizada</span>
+          <q-btn v-if="p.row.estado === 'pendiente'" flat round dense icon="check_circle" color="positive" title="Aceptar" @click="pedirConfirmacion(p.row, 'aceptar')" />
+          <q-btn v-if="p.row.estado === 'pendiente'" flat round dense icon="cancel" color="negative" title="Rechazar" @click="pedirConfirmacion(p.row, 'rechazar')" />
+          <span v-else class="text-grey">Finalizado</span>
         </q-td>
       </template>
     </q-table>
+
+    <confirm-dialog
+      v-model="dialogoConfirm"
+      :mensaje="mensajeConfirm"
+      :texto-boton="accionConfirm === 'aceptar' ? 'Aceptar' : 'Rechazar'"
+      :tipo="accionConfirm === 'aceptar' ? 'positive' : 'negative'"
+      @confirmar="confirmarAccion"
+    />
   </q-page>
 </template>

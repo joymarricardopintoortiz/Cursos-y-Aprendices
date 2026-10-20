@@ -3,6 +3,7 @@ import { ref, nextTick } from 'vue'
 import { usuariosService } from '../services/usuarios.service'
 import { useNotify } from '../composables/useNotify'
 import ErrorList from '../components/shared/ErrorList.vue'
+import ConfirmDialog from '../components/shared/ConfirmDialog.vue'
 
 const { ok, listaErrores } = useNotify()
 
@@ -11,12 +12,18 @@ const form = ref({ nombre: '', email: '', password: '' })
 const verClave = ref(false)
 const errores = ref([])
 const guardando = ref(false)
+const dialogoConfirm = ref(false)
 
 const req = (v) => !!v || 'Campo obligatorio'
 const emailValido = (v) => /.+@.+\..+/.test(v) || 'Email no válido'
 const minimo = (v) => (v && v.length >= 6) || 'Mínimo 6 caracteres'
 
-const guardar = async () => {
+const guardar = () => {
+  errores.value = []
+  dialogoConfirm.value = true
+}
+
+const crearUsuario = async () => {
   errores.value = []
   guardando.value = true
   try {
@@ -60,5 +67,13 @@ const guardar = async () => {
       <error-list :errores="errores" />
       <q-btn unelevated color="primary" type="submit" label="Crear usuario" :loading="guardando" />
     </q-form>
+
+    <confirm-dialog
+      v-model="dialogoConfirm"
+      :mensaje="`¿Desea crear el usuario ${form.nombre} con el correo ${form.email}?`"
+      texto-boton="Crear usuario"
+      tipo="positive"
+      @confirmar="crearUsuario"
+    />
   </q-page>
 </template>
