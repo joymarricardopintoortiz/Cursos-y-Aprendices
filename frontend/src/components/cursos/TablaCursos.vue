@@ -24,7 +24,7 @@ const columnas = computed(() => {
   return props.admin
     ? base
     : [
-        ...base.filter((c) => c.name !== 'acciones'),
+        ...base.filter((c) => c.name !== 'acciones' && c.name !== 'status'),
         { name: 'matricula', label: 'Matrícula', field: '_id', align: 'center' },
       ]
 })
