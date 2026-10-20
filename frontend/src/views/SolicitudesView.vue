@@ -131,7 +131,10 @@ const confirmarAccion = () => {
         <q-td :props="p">
           <q-btn v-if="p.row.estado === 'pendiente'" flat round dense icon="check_circle" color="positive" title="Aceptar" @click="pedirConfirmacion(p.row, 'aceptar')" />
           <q-btn v-if="p.row.estado === 'pendiente'" flat round dense icon="cancel" color="negative" title="Rechazar" @click="pedirConfirmacion(p.row, 'rechazar')" />
-          <span v-else class="text-grey">Finalizado</span>
+          <q-badge v-else color="grey-7" text-color="white" rounded class="text-weight-bold q-px-sm q-py-xs">
+            <q-icon name="task_alt" size="14px" class="q-mr-xs" />
+            Finalizado
+          </q-badge>
         </q-td>
       </template>
     </q-table>
