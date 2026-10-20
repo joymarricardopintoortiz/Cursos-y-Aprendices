@@ -406,6 +406,48 @@ body {
   color: #fff !important;
 }
 
+.tabla th,
+.tabla td,
+.tabla thead th,
+.tabla tbody td {
+  text-align: center !important;
+}
+
+.tabla thead th .q-table__sort-icon {
+  margin-left: 4px;
+}
+
+.tabla thead th.sortable {
+  cursor: pointer;
+}
+
+.tabla thead th .q-table__sort-icon {
+  position: relative;
+}
+
+.tabla td .q-btn.q-btn--dense:not(.q-btn--round) {
+  width: 180px !important;
+  min-width: 180px !important;
+  min-height: 34px !important;
+  padding: 4px 14px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.4px;
+  border-radius: 6px;
+}
+
+.tabla td .q-btn.q-btn--dense:not(.q-btn--round) .q-btn__content {
+  justify-content: center;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+
+.tabla td .q-btn.q-btn--dense.disabled {
+  background: #cfd8cc !important;
+  color: #6b7a66 !important;
+  opacity: 1 !important;
+  box-shadow: none !important;
+}
+
 /* ============================================================
    TARJETAS DE ESTADÍSTICAS (HOME)
    ============================================================ */
@@ -754,6 +796,39 @@ body {
   left: 11px;
   top: 10px;
   font-size: 15px;
+}
+
+.tabla td .q-badge:not(.q-badge--rounded).bg-positive,
+.tabla td .q-badge:not(.q-badge--rounded).bg-grey-7 {
+  padding: 4px 8px;
+  border-radius: 1em;
+  font-weight: 700;
+  color: #fff;
+}
+
+.tabla td .q-badge:not(.q-badge--rounded).bg-positive::before,
+.tabla td .q-badge:not(.q-badge--rounded).bg-grey-7::before {
+  font-family: 'Material Icons';
+  font-size: 14px;
+  font-weight: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  white-space: nowrap;
+  font-feature-settings: 'liga';
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
+.tabla td .q-badge:not(.q-badge--rounded).bg-positive::before {
+  content: 'check_circle';
+}
+
+.tabla td .q-badge:not(.q-badge--rounded).bg-grey-7::before {
+  content: 'cancel';
 }
 
 /* ============================================================

@@ -41,6 +41,12 @@ const tarjetas = computed(() =>
       ]
     : [
         { titulo: 'Cursos disponibles', valor: cursos.value.length, icono: 'menu_book', clase: 'stat-card--azul' },
+                {
+          titulo: 'Pendientes',
+          valor: solicitudes.value.filter((s) => s.usuarioEmail === auth.usuario?.email && s.estado === 'pendiente').length,
+          icono: 'schedule',
+          clase: 'stat-card--amarillo',
+        },
         {
           titulo: 'Aceptados',
           valor: solicitudes.value.filter((s) => s.usuarioEmail === auth.usuario?.email && s.estado === 'aceptada').length,
