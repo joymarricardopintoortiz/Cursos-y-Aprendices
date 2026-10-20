@@ -14,6 +14,12 @@ const misSolicitudes = computed(() =>
   solicitudes.value.filter((s) => s.usuarioEmail === auth.usuario?.email),
 )
 
+const columnas = [
+  { name: 'curso', label: 'Curso', field: 'cursoNombre', align: 'left' },
+  { name: 'fecha', label: 'Fecha', field: 'fecha', align: 'left' },
+  { name: 'estado', label: 'Estado', field: 'estado', align: 'center' },
+]
+
 const etiquetaEstado = (estado) =>
   estado === 'aceptada' ? 'Aceptado' : estado === 'rechazada' ? 'Rechazado' : 'Pendiente'
 
@@ -76,22 +82,33 @@ const guardar = () => {
     </q-form>
 
     <h2 class="profile-sub">Mis solicitudes de matrícula</h2>
-    <q-list bordered class="rounded-borders">
-      <q-item v-for="s in misSolicitudes" :key="s.id">
-        <q-item-section>
-          <q-item-label>{{ s.cursoNombre }}</q-item-label>
-          <q-item-label caption>{{ s.fecha }}</q-item-label>
-        </q-item-section>
-        <q-item-section side>
-          <q-badge :color="s.estado === 'aceptada' ? 'positive' : s.estado === 'rechazada' ? 'negative' : 'warning'">
-            {{ etiquetaEstado(s.estado) }}
+    <q-table
+      class="tabla tabla-contorno"
+      flat
+      bordered
+      row-key="id"
+      :rows="misSolicitudes"
+      :columns="columnas"
+      rows-per-page-label="Filas por página"
+      no-data-label="No tienes solicitudes todavía"
+    >
+      <template #body-cell-estado="p">
+        <q-td :props="p">
+          <q-badge
+            :color="p.row.estado === 'aceptada' ? 'positive' : p.row.estado === 'rechazada' ? 'negative' : 'warning'"
+            :text-color="p.row.estado === 'pendiente' ? 'dark' : 'white'"
+            rounded
+            class="text-weight-bold q-px-sm q-py-xs"
+          >
+            <q-icon
+              :name="p.row.estado === 'aceptada' ? 'check_circle' : p.row.estado === 'rechazada' ? 'cancel' : 'schedule'"
+              size="14px"
+              class="q-mr-xs"
+            />
+            {{ etiquetaEstado(p.row.estado) }}
           </q-badge>
-        </q-item-section>
-      </q-item>
-      <q-item v-if="!misSolicitudes.length">
-        <q-item-section>No tienes solicitudes todavía.</q-item-section>
-      </q-item>
-    </q-list>
+        </q-td>
+      </template>
+    </q-table>
   </q-page>
 </template>
-
