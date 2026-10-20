@@ -23,7 +23,7 @@ const errores = ref([])
 const guardando = ref(false)
 
 const req = (v) => (v !== '' && v !== null && v !== undefined) || 'Campo obligatorio'
-const emailValido = (v) => /.+@.+\..+/.test(v) || 'Email no válido'
+const emailValido = (v) => /^[^\s@]+@sena\.edu\.co$/i.test((v || '').trim()) || 'Solo se permiten correos @sena.edu.co'
 
 onMounted(async () => {
   try {
