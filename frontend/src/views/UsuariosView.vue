@@ -15,8 +15,8 @@ const guardando = ref(false)
 const dialogoConfirm = ref(false)
 
 const req = (v) => !!v || 'Campo obligatorio'
-const emailValido = (v) => /.+@.+\..+/.test(v) || 'Email no válido'
 const minimo = (v) => (v && v.length >= 6) || 'Mínimo 6 caracteres'
+const emailValido = (v) => /^[^\s@]+@sena\.edu\.co$/i.test((v || '').trim()) || 'Solo se permiten correos @sena.edu.co'
 
 const guardar = () => {
   errores.value = []
@@ -51,7 +51,7 @@ const crearUsuario = async () => {
 
     <q-form ref="formRef" novalidate class="form-usuario form-col" @submit="guardar">
       <q-input outlined dense v-model="form.nombre" label="Nombre" :rules="[req]" />
-      <q-input outlined dense v-model="form.email" type="email" label="Correo" :rules="[req, emailValido]" />
+      <q-input outlined dense v-model="form.email" type="email" label="Correo" hint="Debe terminar en @sena.edu.co" :rules="[req, emailValido]" />
       <q-input
         outlined
         dense
