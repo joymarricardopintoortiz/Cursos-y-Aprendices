@@ -20,6 +20,7 @@ const buscar = ref('')
 const filtroEstado = ref(auth.esAdmin ? null : 0)
 const dialogoForm = ref(false)
 const dialogoConfirm = ref(false)
+const accionConfirm = ref('desactivar')
 const seleccionado = ref(null)
 const solicitudesStore = useSolicitudesStore()
 const { solicitudes } = storeToRefs(solicitudesStore)
@@ -91,8 +92,9 @@ const guardado = () => {
   cargar()
 }
 
-const pedirDesactivar = (curso) => {
+const pedirConfirmacion = (curso, accion) => {
   seleccionado.value = curso
+  accionConfirm.value = accion
   dialogoConfirm.value = true
 }
 
@@ -113,6 +115,14 @@ const activar = async (curso) => {
     cargar()
   } catch (e) {
     error(e)
+  }
+}
+
+const confirmarAccion = () => {
+  if (accionConfirm.value === 'activar') {
+    activar(seleccionado.value)
+  } else {
+    desactivar()
   }
 }
 
@@ -146,8 +156,8 @@ onMounted(() => {
       :admin="auth.esAdmin"
       :matriculados-ids="matriculadosIds"
       @editar="editar"
-      @activar="activar"
-      @desactivar="pedirDesactivar"
+      @activar="pedirConfirmacion($event, 'activar')"
+      @desactivar="pedirConfirmacion($event, 'desactivar')"
       @matricular="pedirMatricula"
     />
 
@@ -157,10 +167,10 @@ onMounted(() => {
 
     <confirm-dialog
       v-model="dialogoConfirm"
-      :mensaje="`¿Desea desactivar el curso ${seleccionado?.nombre ?? ''}?`"
-      texto-boton="Desactivar"
-      tipo="aviso"
-      @confirmar="desactivar"
+      :mensaje="`¿Desea ${accionConfirm} el curso ${seleccionado?.nombre ?? ''}?`"
+      :texto-boton="accionConfirm === 'activar' ? 'Activar' : 'Desactivar'"
+      :tipo="accionConfirm === 'activar' ? 'positive' : 'negative'"
+      @confirmar="confirmarAccion"
     />
   </q-page>
 </template>

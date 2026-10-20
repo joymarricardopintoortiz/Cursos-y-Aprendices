@@ -19,6 +19,7 @@ const filtroEstado = ref(auth.esAdmin ? null : 0)
 const filtroCurso = ref(null)
 const dialogoForm = ref(false)
 const dialogoConfirm = ref(false)
+const accionConfirm = ref('desactivar')
 const seleccionado = ref(null)
 
 const opcionesEstado = [
@@ -70,8 +71,9 @@ const guardado = () => {
   cargar()
 }
 
-const pedirDesactivar = (aprendiz) => {
+const pedirConfirmacion = (aprendiz, accion) => {
   seleccionado.value = aprendiz
+  accionConfirm.value = accion
   dialogoConfirm.value = true
 }
 
@@ -92,6 +94,14 @@ const activar = async (aprendiz) => {
     cargar()
   } catch (e) {
     error(e)
+  }
+}
+
+const confirmarAccion = () => {
+  if (accionConfirm.value === 'activar') {
+    activar(seleccionado.value)
+  } else {
+    desactivar()
   }
 }
 
@@ -137,8 +147,8 @@ onMounted(() => {
       :filtro="buscar || ''"
       :admin="auth.esAdmin"
       @editar="editar"
-      @activar="activar"
-      @desactivar="pedirDesactivar"
+      @activar="pedirConfirmacion($event, 'activar')"
+      @desactivar="pedirConfirmacion($event, 'desactivar')"
     />
 
     <q-dialog v-model="dialogoForm" persistent>
@@ -147,10 +157,10 @@ onMounted(() => {
 
     <confirm-dialog
       v-model="dialogoConfirm"
-      :mensaje="`¿Desea desactivar al aprendiz ${seleccionado?.nombre ?? ''}?`"
-      texto-boton="Desactivar"
-      tipo="aviso"
-      @confirmar="desactivar"
+      :mensaje="`¿Desea ${accionConfirm} al aprendiz ${seleccionado?.nombre ?? ''}?`"
+      :texto-boton="accionConfirm === 'activar' ? 'Activar' : 'Desactivar'"
+      :tipo="accionConfirm === 'activar' ? 'positive' : 'negative'"
+      @confirmar="confirmarAccion"
     />
   </q-page>
 </template>

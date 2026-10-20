@@ -15,7 +15,7 @@ const emit = defineEmits(['update:modelValue', 'confirmar'])
       <q-card-section>{{ mensaje }}</q-card-section>
       <q-card-actions align="right">
         <q-btn flat label="Cancelar" v-close-popup />
-        <q-btn unelevated color="negative" :label="textoBoton" v-close-popup @click="emit('confirmar')" />
+        <q-btn unelevated :color="tipo" :label="textoBoton" v-close-popup @click="emit('confirmar')" />
       </q-card-actions>
     </q-card>
   </q-dialog>
