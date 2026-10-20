@@ -36,7 +36,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <q-layout view="hHh lpR fFf">
+  <q-layout view="hHh Lpr fFf">
     <q-header class="app-header">
       <q-toolbar>
         <q-btn flat dense round icon="menu" class="menu-btn" @click="menu = !menu" />

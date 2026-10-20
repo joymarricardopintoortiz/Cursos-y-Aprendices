@@ -76,7 +76,6 @@ body {
   background: linear-gradient(135deg, #1f5e00 0%, #2b7d00 32%, #39a900 68%, #51c41a 100%);
   color: #fff;
   box-shadow: 0 4px 16px rgba(31, 94, 0, 0.35);
-  position: relative;
 }
 
 /* Franja tricolor decorativa (guiño al logo SENA) */
