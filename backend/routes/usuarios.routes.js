@@ -2,16 +2,12 @@ import { Router } from "express";
 import { usuarioCtrl } from "../controller/usuario.controller.js";
 import { usuarioVali } from "../validations/usuario.validation.js";
 import { validateJWT } from "../middlewares/validateJWT.js";
+import { soloAdmin } from "../middlewares/validateRole.js";
 
 const { validateRegisterUsuario, validateLogin, validateUpdateUsuario } = usuarioVali;
 const { registerUsuario, loginUsuario, getUsuarios, updateUsuario } = usuarioCtrl;
 
 const routerUsuario = Router();
-
-const soloAdmin = (req, res, next) => {
-  if (req.usuario.rol === "ADMIN") return next();
-  res.status(403).json({ msg: "No tienes permiso para esta operacion" });
-};
 
 const puedeEditar = (req, res, next) => {
   if (req.usuario.rol === "ADMIN" || req.usuario._id.toString() === req.params.id) return next();
