@@ -15,6 +15,7 @@ const form = ref({ email: '', password: '' })
 const verClave = ref(false)
 const cargando = ref(false)
 const errores = ref([])
+const dialogoOlvide = ref(false)
 
 const req = (v) => !!v || 'Campo obligatorio'
 const emailValido = (v) => /.+@.+\..+/.test(v) || 'Email no válido'
@@ -46,9 +47,31 @@ const ingresar = async () => {
           <q-icon :name="verClave ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="verClave = !verClave" />
         </template>
       </q-input>
+      <p class="auth-olvide" @click="dialogoOlvide = true">¿Olvidaste tu contraseña?</p>
       <error-list :errores="errores" />
       <q-btn unelevated color="primary" type="submit" label="Ingresar" icon="login" size="md" class="full-width" :loading="cargando" />
       <p class="auth-lema">¡Aprender hoy es construir el país de mañana!</p>
     </q-form>
   </q-card>
+
+  <q-dialog v-model="dialogoOlvide">
+    <q-card class="dialog-card">
+      <q-card-section class="dialog-titulo row items-center no-wrap">
+        <q-icon name="lock_reset" size="26px" class="q-mr-sm" color="primary" />
+        Recuperar contraseña
+      </q-card-section>
+      <q-card-section class="q-pt-none">
+        <p class="dialog-texto">
+          Para restablecer tu contraseña debes contactar al <strong>administrador del sistema</strong>.
+          Él puede asignarte una nueva desde la sección <strong>Usuarios</strong>, en el icono de editar.
+        </p>
+        <p class="dialog-texto dialog-texto-suave">
+          Ten a la mano tu correo institucional @sena.edu.co y tu documento de identidad.
+        </p>
+      </q-card-section>
+      <q-card-actions align="right">
+        <q-btn unelevated color="primary" label="Entendido" v-close-popup />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
 </template>

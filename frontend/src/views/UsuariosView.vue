@@ -35,7 +35,7 @@ const columnas = [
 ]
 
 const dialogoEditar = ref(false)
-const editando = ref({ _id: null, documento: '', nombre: '', email: '', password: '' })
+const editando = ref({ _id: null, documento: '', nombre: '', email: '', password: '', passwordConfirm: '' })
 const erroresEditar = ref([])
 const guardandoEdicion = ref(false)
 const verClaveEditar = ref(false)
@@ -44,6 +44,11 @@ const req = (v) => !!(v && String(v).trim()) || 'Campo obligatorio'
 const emailValido = (v) => /^[^\s@]+@sena\.edu\.co$/i.test((v || '').trim()) || 'Solo se permiten correos @sena.edu.co'
 const minimo = (v) => (v && v.length >= 6) || 'Mínimo 6 caracteres'
 const minimoOpcional = (v) => !v || v.length >= 6 || 'Mínimo 6 caracteres'
+const confirmarOpcional = (v) => {
+  // Solo exige que coincida si se escribio una contraseña nueva.
+  if (!editando.value.password) return true
+  return v === editando.value.password || 'Las contraseñas no coinciden'
+}
 const documentoValido = (v) => /^\d{6,12}$/.test(v) || 'Solo números, de 6 a 12 dígitos'
 const documentoOpcional = (v) => !v || /^\d{6,12}$/.test(v) || 'Solo números, de 6 a 12 dígitos'
 
@@ -115,7 +120,7 @@ const crearUsuario = async () => {
 }
 
 const abrirEditar = (u) => {
-  editando.value = { _id: u._id, documento: u.documento || '', nombre: u.nombre, email: u.email, password: '' }
+  editando.value = { _id: u._id, documento: u.documento || '', nombre: u.nombre, email: u.email, password: '', passwordConfirm: '' }
   erroresEditar.value = []
   verClaveEditar.value = false
   dialogoEditar.value = true
@@ -123,9 +128,17 @@ const abrirEditar = (u) => {
 
 const guardarEdicion = async () => {
   erroresEditar.value = []
+
+  // Si se escribio una contraseña nueva, la confirmacion debe coincidir.
+  // Con password vacio se ignora la confirmacion: significa "no cambiarla".
+  if (editando.value.password && editando.value.password !== editando.value.passwordConfirm) {
+    erroresEditar.value = ['Las contraseñas no coinciden']
+    return
+  }
+
   guardandoEdicion.value = true
   try {
-    const { _id, ...datos } = editando.value
+    const { _id, passwordConfirm, ...datos } = editando.value
     const { data } = await usuariosService.actualizar(_id, datos)
     ok(data.msg)
     if (_id === auth.usuario?._id) auth.setSesion({ token: auth.token, usuario: data.usuario })
@@ -280,6 +293,17 @@ onBeforeUnmount(() => clearInterval(temporizador))
                 <q-icon :name="verClaveEditar ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="verClaveEditar = !verClaveEditar" />
               </template>
             </q-input>
+            <q-input
+              outlined
+              dense
+              v-model="editando.passwordConfirm"
+              :type="verClaveEditar ? 'text' : 'password'"
+              label="Confirmar contraseña"
+              hint="Debe coincidir con la nueva contraseña"
+              class="completo"
+              autocomplete="new-password"
+              :rules="[confirmarOpcional]"
+            />
           </q-card-section>
           <q-card-section v-if="erroresEditar.length">
             <error-list :errores="erroresEditar" />
