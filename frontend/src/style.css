@@ -1,22 +1,47 @@
 /* ============================================================
    SENA - Cursos y Aprendices
    Hoja de estilos global (identidad vibrante)
+   ------------------------------------------------------------
+   ÍNDICE
+   1. Variables (paleta, sombras, radios)
+   2. Base (body, selección, scrollbar)
+   3. Header
+   4. Menú lateral (drawer)
+   5. Páginas y encabezados
+   6. Filtros y campos de texto
+   7. Tablas
+   8. Tarjetas de estadísticas (Home)
+   9. Login / Auth
+   10. Formularios
+   11. Diálogos
+   12. Alertas de error
+   13. Layout de Usuarios
+   14. Layout de Perfil
+   15. Tablas con scroll y barra superior
+   16. Accesibilidad
+   17. Responsive (1000px → 300px)
    ============================================================ */
 
+
+/* ============================================================
+   1. VARIABLES GLOBALES
+   Se usan con var(--nombre) en todo el archivo. Cambiar un valor
+   aquí cambia toda la app.
+   ============================================================ */
 :root {
   /* --- Paleta principal SENA --- */
-  --q-primary: #39a900;
-  --primario: #39a900;
-  --primario-claro: #51c41a;
-  --primario-oscuro: #2b7d00;
-  --primario-profundo: #1f5e00;
+  --q-primary: #39a900;          /* Color primario que usa Quasar en sus componentes */
+  --primario: #39a900;           /* Verde SENA base */
+  --primario-claro: #51c41a;     /* Verde claro (degradados, hover) */
+  --primario-oscuro: #2b7d00;    /* Verde oscuro (cabeceras, bordes) */
+  --primario-profundo: #1f5e00;  /* Verde muy oscuro (títulos, texto destacado) */
 
   /* --- Superficies y textos --- */
-  --fondo: #f2f7ef;
-  --superficie: #ffffff;
-  --borde: #d7e5d4;
-  --texto: #1d2b18;
-  --suave: #5f7059;
+  --fondo: #f2f7ef;              /* Fondo general de la app */
+  --superficie: #ffffff;         /* Fondo de tarjetas, tablas y formularios */
+  --borde: #d7e5d4;              /* Color de bordes suaves */
+  --texto: #1d2b18;              /* Texto principal */
+  --suave: #5f7059;              /* Texto secundario */
 
   /* --- Acentos del logo SENA --- */
   --amarillo: #ffc61e;
@@ -24,34 +49,44 @@
   --naranja: #f5821f;
   --rojo: #d64550;
 
-  --radio: 14px;
-  --sombra-suave: 0 2px 8px rgba(31, 94, 0, 0.08);
-  --sombra-media: 0 6px 18px rgba(31, 94, 0, 0.14);
-  --sombra-alta: 0 14px 34px rgba(31, 94, 0, 0.2);
-  --transicion: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  /* --- Forma y efectos --- */
+  --radio: 14px;                                          /* Radio de esquinas estándar */
+  --sombra-suave: 0 2px 8px rgba(31, 94, 0, 0.08);        /* Elevación baja */
+  --sombra-media: 0 6px 18px rgba(31, 94, 0, 0.14);       /* Elevación media */
+  --sombra-alta: 0 14px 34px rgba(31, 94, 0, 0.2);        /* Elevación alta (hover) */
+  --transicion: 0.22s cubic-bezier(0.4, 0, 0.2, 1);       /* Transición estándar */
 }
 
+
+/* ============================================================
+   2. BASE
+   ============================================================ */
+
+/* box-sizing: el padding y borde se incluyen en el ancho. Evita desbordes. */
 * {
   box-sizing: border-box;
 }
 
+/* Fondo con degradado suave + brillo verde en la esquina superior derecha */
 body {
   margin: 0;
   font-family: Roboto, 'Segoe UI', Arial, sans-serif;
   background:
     radial-gradient(circle at 100% 0%, rgba(81, 196, 26, 0.1), transparent 45%),
     linear-gradient(180deg, #f4faf0 0%, var(--fondo) 100%);
-  background-attachment: fixed;
+  background-attachment: fixed;   /* El fondo no se mueve al hacer scroll */
   color: var(--texto);
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;             /* Evita scroll horizontal accidental en pantallas pequeñas */
 }
 
+/* Color del texto al seleccionarlo con el mouse */
 ::selection {
   background: var(--primario);
   color: #fff;
 }
 
-/* Scrollbar con esencia SENA */
+/* Scrollbar personalizado (Chrome, Edge, Safari) */
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
@@ -68,17 +103,19 @@ body {
   background: var(--primario-profundo);
 }
 
+
 /* ============================================================
-   HEADER
+   3. HEADER (barra superior)
    ============================================================ */
 
+/* Barra verde con degradado diagonal */
 .app-header {
   background: linear-gradient(135deg, #1f5e00 0%, #2b7d00 32%, #39a900 68%, #51c41a 100%);
   color: #fff;
   box-shadow: 0 4px 16px rgba(31, 94, 0, 0.35);
 }
 
-/* Franja tricolor decorativa (guiño al logo SENA) */
+/* Franja tricolor decorativa bajo el header (guiño al logo SENA) */
 .app-header::after {
   content: '';
   display: block;
@@ -95,21 +132,28 @@ body {
   min-height: 58px;
 }
 
+/* Logo del header */
 .header-logo {
   height: 38px;
   margin-left: 8px;
-  object-fit: contain;
+  object-fit: contain;   /* Mantiene la proporción sin deformar */
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
+/* Título de la app en el header */
 .header-title {
   margin-left: 10px;
   font-size: 17px;
   font-weight: 700;
   color: #fff;
   letter-spacing: 0.4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;   /* Si no cabe, muestra "..." en vez de romper el layout */
+  min-width: 0;
 }
 
+/* Píldora con el nombre del usuario logueado */
 .header-user {
   margin-right: 8px;
   font-size: 13px;
@@ -119,8 +163,13 @@ body {
   padding: 5px 14px;
   border-radius: 20px;
   border: 1px solid rgba(255, 255, 255, 0.35);
+  white-space: nowrap;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
+/* Botones planos del header en blanco, con hover translúcido */
 .app-header .q-btn--flat {
   color: #fff;
 }
@@ -128,10 +177,12 @@ body {
   background: rgba(255, 255, 255, 0.18);
 }
 
+
 /* ============================================================
-   MENÚ LATERAL (DRAWER)
+   4. MENÚ LATERAL (DRAWER)
    ============================================================ */
 
+/* Bloque del logo y nombre en la parte superior del menú */
 .brand {
   display: flex;
   flex-direction: column;
@@ -145,6 +196,8 @@ body {
 
 .brand-logo {
   width: 96px;
+  max-width: 100%;
+  height: auto;
   filter: drop-shadow(0 4px 8px rgba(31, 94, 0, 0.25));
 }
 
@@ -164,11 +217,13 @@ body {
   font-weight: 600;
 }
 
+/* Fondo y borde del panel lateral */
 .q-drawer {
   background: #fbfdf9;
   border-right: 2px solid var(--borde);
 }
 
+/* Ítems del menú: redondeados y con transición */
 .q-drawer .q-item {
   margin: 4px 10px;
   border-radius: 12px;
@@ -183,6 +238,7 @@ body {
   transition: color var(--transicion);
 }
 
+/* Hover: fondo verde claro y pequeño desplazamiento a la derecha */
 .q-drawer .q-item:hover {
   background: #e4f3d8;
   transform: translateX(3px);
@@ -192,11 +248,12 @@ body {
   color: var(--primario);
 }
 
+/* Botón hamburguesa (abre/cierra el menú) */
 .menu-btn {
   display: inline-flex;
 }
 
-/* Ítem activo: fondo verde sólido vibrante e icono en blanco */
+/* Ítem activo (página actual): fondo verde sólido y texto/icono blancos */
 .q-drawer .q-item.item-activo,
 .q-drawer .q-item.item-activo:hover {
   color: #fff;
@@ -215,10 +272,12 @@ body {
   color: #fff;
 }
 
+
 /* ============================================================
-   PÁGINAS / ENCABEZADOS
+   5. PÁGINAS / ENCABEZADOS
    ============================================================ */
 
+/* Contenedor principal de cada vista, con animación de entrada */
 .page {
   padding: 10px 24px 24px;
   width: 100%;
@@ -227,6 +286,7 @@ body {
   animation: pagina-entrada 0.35s ease both;
 }
 
+/* Aparece desde abajo con fundido */
 @keyframes pagina-entrada {
   from {
     opacity: 0;
@@ -238,25 +298,26 @@ body {
   }
 }
 
+/* Cabecera de página: título a la izquierda, botón de acción a la derecha */
 .page-head {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: wrap;   /* Si no caben, el botón baja a otra línea */
   gap: 12px;
   margin-bottom: 18px;
 }
 
-/* Título con barra de acento verde-amarilla */
+/* Título con barra de acento verde-amarilla a la izquierda */
 .page-title {
   position: relative;
   margin: 0;
-  margin-top: 0;
   padding-left: 16px;
   font-size: 27px;
   font-weight: 800;
   color: var(--primario-profundo);
   letter-spacing: -0.3px;
+  overflow-wrap: anywhere;   /* Evita que palabras largas desborden */
 }
 
 .page-title::before {
@@ -270,6 +331,7 @@ body {
   background: linear-gradient(180deg, var(--primario), var(--amarillo));
 }
 
+/* Subtítulo bajo el título */
 .page-sub {
   margin: 6px 0 0;
   padding-left: 16px;
@@ -282,7 +344,7 @@ body {
   text-align: center;
 }
 
-/* Botones destacados de acción */
+/* Botones de acción destacados (Nuevo, Crear...) */
 .page-head .q-btn--unelevated {
   border-radius: 12px;
   font-weight: 700;
@@ -302,10 +364,12 @@ body {
   border-radius: 12px;
 }
 
+
 /* ============================================================
-   FILTROS Y CAMPOS DE TEXTO
+   6. FILTROS Y CAMPOS DE TEXTO
    ============================================================ */
 
+/* Fila de filtros: se acomodan en varias líneas según el espacio */
 .filtros {
   display: flex;
   flex-wrap: wrap;
@@ -313,11 +377,13 @@ body {
   margin-bottom: 16px;
 }
 
+/* Cada filtro crece desde 200px hasta un máximo de 280px */
 .filtros > * {
   flex: 1 1 200px;
   max-width: 280px;
 }
 
+/* Campos outlined de Quasar: esquinas redondeadas */
 .q-field--outlined .q-field__control {
   border-radius: 10px;
 }
@@ -326,24 +392,34 @@ body {
   border-color: var(--borde);
 }
 
+/* Campo enfocado: borde verde y halo suave */
 .q-field--outlined.q-field--focused .q-field__control {
   border-color: var(--primario) !important;
   box-shadow: 0 0 0 3px rgba(57, 169, 0, 0.18);
 }
 
+
 /* ============================================================
-   TABLAS
+   7. TABLAS
    ============================================================ */
 
+/* Contenedor de tabla: tarjeta blanca con borde y sombra */
 .tabla {
   background: var(--superficie);
   border: 1px solid var(--borde);
   border-radius: var(--radio);
   overflow: hidden;
   box-shadow: var(--sombra-suave);
+  max-width: 100%;
 }
 
-/* Cabecera verde oscuro sólido con texto blanco (accesible) */
+/* Scroll horizontal interno: si la tabla es más ancha que la pantalla,
+   se desliza dentro de la tarjeta sin desbordar la página */
+.tabla .q-table__middle {
+  overflow-x: auto;
+}
+
+/* Cabecera verde oscuro con texto blanco (buen contraste) */
 .tabla thead tr {
   background: linear-gradient(180deg, var(--primario-oscuro), var(--primario-profundo));
 }
@@ -359,9 +435,12 @@ body {
   padding-bottom: 12px;
 }
 
+/* Icono de ordenamiento: tenue; amarillo cuando está activo o en hover */
 .tabla thead th .q-table__sort-icon {
   color: rgba(255, 255, 255, 0.65);
   font-size: 18px;
+  margin-left: 4px;
+  position: relative;
 }
 
 .tabla thead th .q-table__sort-icon--active,
@@ -369,6 +448,11 @@ body {
   color: var(--amarillo);
 }
 
+.tabla thead th.sortable {
+  cursor: pointer;
+}
+
+/* Filas: zebra (pares con fondo suave) y resaltado al pasar el mouse */
 .tabla tbody tr {
   transition: background var(--transicion);
 }
@@ -386,6 +470,7 @@ body {
   color: #2a3a23;
 }
 
+/* Pie de tabla (paginación) */
 .tabla .q-table__bottom {
   border-top: 2px solid #e8f1e4;
   color: var(--suave);
@@ -396,6 +481,7 @@ body {
   font-weight: 500;
 }
 
+/* Variante con bordes en todas las celdas */
 .tabla-contorno th,
 .tabla-contorno td {
   border: 1px solid var(--borde);
@@ -406,6 +492,7 @@ body {
   color: #fff !important;
 }
 
+/* Todo el contenido de la tabla va centrado */
 .tabla th,
 .tabla td,
 .tabla thead th,
@@ -413,18 +500,7 @@ body {
   text-align: center !important;
 }
 
-.tabla thead th .q-table__sort-icon {
-  margin-left: 4px;
-}
-
-.tabla thead th.sortable {
-  cursor: pointer;
-}
-
-.tabla thead th .q-table__sort-icon {
-  position: relative;
-}
-
+/* Botones dentro de celdas: ancho uniforme para que la columna se vea alineada */
 .tabla td .q-btn.q-btn--dense:not(.q-btn--round) {
   width: 180px !important;
   min-width: 180px !important;
@@ -441,6 +517,7 @@ body {
   white-space: nowrap;
 }
 
+/* Botón deshabilitado: gris legible */
 .tabla td .q-btn.q-btn--dense.disabled {
   background: #cfd8cc !important;
   color: #6b7a66 !important;
@@ -448,10 +525,48 @@ body {
   box-shadow: none !important;
 }
 
+/* Insignias de estado (activo / inactivo) con icono automático */
+.tabla td .q-badge:not(.q-badge--rounded).bg-positive,
+.tabla td .q-badge:not(.q-badge--rounded).bg-grey-7 {
+  padding: 4px 8px;
+  border-radius: 1em;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* Prepara el icono (fuente Material Icons) antes del texto */
+.tabla td .q-badge:not(.q-badge--rounded).bg-positive::before,
+.tabla td .q-badge:not(.q-badge--rounded).bg-grey-7::before {
+  font-family: 'Material Icons';
+  font-size: 14px;
+  font-weight: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  white-space: nowrap;
+  font-feature-settings: 'liga';
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
+/* Activo: check; Inactivo: cancel */
+.tabla td .q-badge:not(.q-badge--rounded).bg-positive::before {
+  content: 'check_circle';
+}
+
+.tabla td .q-badge:not(.q-badge--rounded).bg-grey-7::before {
+  content: 'cancel';
+}
+
+
 /* ============================================================
-   TARJETAS DE ESTADÍSTICAS (HOME)
+   8. TARJETAS DE ESTADÍSTICAS (HOME)
    ============================================================ */
 
+/* Cuadrícula de 3 columnas (baja a 2 y 1 en responsive) */
 .stats {
   position: relative;
   display: grid;
@@ -460,6 +575,7 @@ body {
   min-height: 90px;
 }
 
+/* Tarjeta individual: icono + número + etiqueta */
 .stat-card {
   position: relative;
   display: flex;
@@ -469,19 +585,21 @@ body {
   background: var(--superficie);
   border: 1px solid var(--borde);
   border-radius: var(--radio);
-  border-top: 4px solid var(--primario);
+  border-top: 4px solid var(--primario);   /* Color cambia según la variante */
   box-shadow: var(--sombra-suave);
   overflow: hidden;
+  min-width: 0;                            /* Permite que el contenido se encoja en la grid */
   transition: transform var(--transicion), box-shadow var(--transicion);
   animation: stat-entrada 0.4s ease both;
 }
 
+/* Hover: la tarjeta se eleva */
 .stat-card:hover {
   transform: translateY(-5px);
   box-shadow: var(--sombra-alta);
 }
 
-/* Detalle circular decorativo de fondo */
+/* Círculo decorativo en la esquina que crece en hover */
 .stat-card::after {
   content: '';
   position: absolute;
@@ -498,6 +616,7 @@ body {
   transform: scale(1.25);
 }
 
+/* Entrada: sube con fundido */
 @keyframes stat-entrada {
   from {
     opacity: 0;
@@ -509,6 +628,7 @@ body {
   }
 }
 
+/* Entrada escalonada: cada tarjeta aparece un poco después de la anterior */
 .stat-card:nth-child(1) { animation-delay: 0.05s; }
 .stat-card:nth-child(2) { animation-delay: 0.1s; }
 .stat-card:nth-child(3) { animation-delay: 0.15s; }
@@ -519,9 +639,11 @@ body {
 .stat-card:nth-child(8) { animation-delay: 0.4s; }
 .stat-card:nth-child(9) { animation-delay: 0.45s; }
 
+/* Icono dentro de un cuadro con degradado */
 .stat-icono {
   position: relative;
   z-index: 1;
+  flex-shrink: 0;            /* No se aplasta cuando falta espacio */
   font-size: 34px;
   color: #fff;
   background: linear-gradient(135deg, var(--primario), var(--primario-oscuro));
@@ -535,6 +657,7 @@ body {
   transform: scale(1.08) rotate(-3deg);
 }
 
+/* Número grande */
 .stat-num {
   position: relative;
   z-index: 1;
@@ -544,6 +667,7 @@ body {
   color: var(--primario-profundo);
 }
 
+/* Etiqueta bajo el número */
 .stat-label {
   position: relative;
   z-index: 1;
@@ -553,9 +677,10 @@ body {
   color: var(--suave);
   text-transform: uppercase;
   letter-spacing: 0.4px;
+  overflow-wrap: anywhere;
 }
 
-/* --- Variantes de color de tarjetas (se asignan desde HomeView) --- */
+/* --- Variantes de color (se asignan desde HomeView con clases) --- */
 .stat-card--verde { border-top-color: var(--primario); }
 .stat-card--verde .stat-icono { background: linear-gradient(135deg, var(--primario), var(--primario-oscuro)); box-shadow: 0 5px 14px rgba(43, 125, 0, 0.35); }
 .stat-card--verde .stat-num { color: var(--primario-profundo); }
@@ -601,22 +726,25 @@ body {
 .stat-card--rojo .stat-num { color: #8f1f2a; }
 .stat-card--rojo::after { background: rgba(214, 69, 80, 0.12); }
 
+
 /* ============================================================
-   LOGIN / AUTH
+   9. LOGIN / AUTH
    ============================================================ */
 
+/* Pantalla completa del login: imagen de fondo centrada y sin estirar */
 .auth-page {
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 16px;
-  background-color: #0f2a00;                    /* color de relleno si la imagen no cubre todo */
+  background-color: #0f2a00;          /* Color de respaldo si la imagen no carga */
   background-image: url('./assets/fondo-login.jpg');
   background-repeat: no-repeat;
   background-position: center center;
-  background-size: cover;                     /* imagen completa: sin estirar ni recortar */
+  background-size: cover;             /* Cubre toda la pantalla manteniendo proporción */
 }
 
+/* Tarjeta blanca del formulario de login */
 .auth-card {
   width: 100%;
   max-width: 400px;
@@ -635,9 +763,12 @@ body {
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
+/* Logo centrado sobre el formulario */
 .auth-logo {
   display: block;
   width: 120px;
+  max-width: 60%;
+  height: auto;
   margin: 0 auto 8px;
   filter: drop-shadow(0 5px 10px rgba(31, 94, 0, 0.3));
   text-align: center;
@@ -650,6 +781,7 @@ body {
   margin-right: auto;
 }
 
+/* Lema / frase institucional en caja verde clara */
 .auth-lema {
   margin: 18px 0 0;
   text-align: center;
@@ -663,7 +795,7 @@ body {
   border-radius: 10px;
 }
 
-/* Enlace "¿Olvidaste tu contraseña?" del login */
+/* Enlace "¿Olvidaste tu contraseña?" */
 .auth-olvide {
   margin: -2px 0 0;
   text-align: center;
@@ -697,7 +829,7 @@ body {
   font-size: 13px;
 }
 
-/* Botón principal del login y formularios */
+/* Botón principal (login, formularios y diálogos) con degradado verde */
 .auth-card .q-btn--unelevated,
 .form-usuario .q-btn--unelevated,
 .dialog-card .q-btn--unelevated {
@@ -716,26 +848,31 @@ body {
   box-shadow: 0 8px 22px rgba(43, 125, 0, 0.5);
 }
 
+
 /* ============================================================
-   FORMULARIOS
+   10. FORMULARIOS
    ============================================================ */
 
+/* Columna simple: campos apilados */
 .form-col {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
+/* Cuadrícula de 2 columnas (1 columna en pantallas pequeñas) */
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
 
+/* Campo que ocupa todo el ancho de la grid */
 .form-grid .completo {
   grid-column: 1 / -1;
 }
 
+/* Subtítulo de sección dentro de formularios o perfil */
 .profile-sub {
   margin: 26px 0 10px;
   font-size: 18px;
@@ -756,7 +893,7 @@ body {
   background: var(--primario);
 }
 
-/* Tarjeta del formulario de usuarios */
+/* Tarjeta del formulario de usuarios / perfil */
 .form-usuario {
   max-width: 480px;
   padding: 26px;
@@ -767,10 +904,12 @@ body {
   box-shadow: var(--sombra-media);
 }
 
+
 /* ============================================================
-   DIÁLOGOS
+   11. DIÁLOGOS (ventanas emergentes)
    ============================================================ */
 
+/* Tarjeta de diálogo: ancho fijo pero nunca más del 95% de la pantalla */
 .dialog-card {
   width: 560px;
   max-width: 95vw;
@@ -778,6 +917,7 @@ body {
   border-radius: var(--radio);
 }
 
+/* Variante pequeña (confirmaciones) */
 .dialog-chico {
   width: 380px;
 }
@@ -788,7 +928,7 @@ body {
   color: var(--primario-profundo);
 }
 
-/* Texto explicativo dentro de los diálogos informativos */
+/* Texto explicativo en diálogos informativos */
 .dialog-texto {
   margin: 0 0 10px;
   font-size: 14.5px;
@@ -805,10 +945,12 @@ body {
   color: var(--suave);
 }
 
+
 /* ============================================================
-   ALERTAS DE ERROR
+   12. ALERTAS DE ERROR
    ============================================================ */
 
+/* Lista roja de errores de validación con icono ⚠ */
 .error-list {
   position: relative;
   margin: 0 0 12px;
@@ -831,38 +973,12 @@ body {
   font-size: 15px;
 }
 
-.tabla td .q-badge:not(.q-badge--rounded).bg-positive,
-.tabla td .q-badge:not(.q-badge--rounded).bg-grey-7 {
-  padding: 4px 8px;
-  border-radius: 1em;
-  font-weight: 700;
-  color: #fff;
-}
 
-.tabla td .q-badge:not(.q-badge--rounded).bg-positive::before,
-.tabla td .q-badge:not(.q-badge--rounded).bg-grey-7::before {
-  font-family: 'Material Icons';
-  font-size: 14px;
-  font-weight: normal;
-  line-height: 1;
-  letter-spacing: normal;
-  text-transform: none;
-  white-space: nowrap;
-  font-feature-settings: 'liga';
-  -webkit-font-feature-settings: 'liga';
-  -webkit-font-smoothing: antialiased;
-  display: inline-block;
-  vertical-align: middle;
-  margin-right: 4px;
-}
-
-.tabla td .q-badge:not(.q-badge--rounded).bg-positive::before {
-  content: 'check_circle';
-}
-
-.tabla td .q-badge:not(.q-badge--rounded).bg-grey-7::before {
-  content: 'cancel';
-}
+/* ============================================================
+   13. LAYOUT DE USUARIOS
+   Formulario a la izquierda, tabla a la derecha. Si no caben,
+   la tabla baja debajo del formulario (flex-wrap).
+   ============================================================ */
 
 .usuarios-layout {
   display: flex;
@@ -871,27 +987,29 @@ body {
   gap: 24px;
 }
 
+/* Formulario: base de 380px */
 .usuarios-layout .form-usuario {
   flex: 0 0 380px;
   max-width: 100%;
 }
 
+/* Tabla: ocupa el resto del espacio. min-width:0 evita que desborde. */
 .usuarios-layout .tabla {
   flex: 1 1 520px;
   min-width: 0;
+  margin-top: -120px;   /* Sube la tabla en escritorio (se anula en responsive) */
 }
 
-.usuarios-layout .tabla {
-  margin-top: -120px;
-}
 
 /* ============================================================
-   PERFIL: formulario a la izquierda, solicitudes a la derecha
+   14. LAYOUT DE PERFIL
+   Formulario a la izquierda; solicitudes a la derecha con
+   la misma altura que el formulario.
    ============================================================ */
 
 .perfil-layout {
   display: flex;
-  align-items: stretch; /* la columna derecha hereda el alto del formulario */
+  align-items: stretch;   /* La columna derecha hereda el alto del formulario */
   flex-wrap: wrap;
   gap: 24px;
 }
@@ -914,7 +1032,7 @@ body {
   flex: 0 0 auto;
 }
 
-/* La tabla se estira al alto del formulario (contenedor interno incluido) */
+/* La tabla se estira al alto disponible */
 .perfil-tabla,
 .perfil-tabla .q-table__container {
   display: flex;
@@ -923,14 +1041,14 @@ body {
   min-height: 0;
 }
 
-/* El cuerpo con las filas hace scroll; la cabecera queda fija arriba */
+/* El cuerpo con filas hace scroll; la cabecera queda fija */
 .perfil-tabla .q-table__middle {
   flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
 }
 
-/* Cabecera pegada arriba mientras se hace scroll */
+/* Cabecera pegada arriba durante el scroll */
 .perfil-tabla thead tr th {
   position: sticky;
   z-index: 1;
@@ -938,12 +1056,30 @@ body {
   background: var(--primario-oscuro);
 }
 
-/* Tabla con altura fija y scroll vertical */
+
+/* ============================================================
+   15. TABLAS CON SCROLL Y BARRA SUPERIOR
+   ============================================================ */
+
+/* Tabla con altura limitada y scroll vertical */
 .tabla-scroll {
-  max-height: 520px; /* ajusta: ~8 filas visibles */
+  max-height: 520px;
 }
 
-/* Barra superior de la tabla: buscador a la izquierda, título a la derecha */
+.tabla-scroll .q-table__middle {
+  max-height: 435px;
+  overflow-y: auto;
+}
+
+/* Cabecera fija mientras se hace scroll */
+.tabla-scroll thead tr th {
+  position: sticky;
+  z-index: 1;
+  top: 0;
+  background: var(--primario-oscuro);
+}
+
+/* Barra superior: buscador a la izquierda, título a la derecha */
 .tabla-top {
   display: flex;
   align-items: center;
@@ -956,6 +1092,7 @@ body {
   min-width: 260px;
 }
 
+/* Título (empujado a la derecha con margin-left:auto) */
 .tabla-top-titulo {
   margin-left: auto;
   text-align: right;
@@ -979,6 +1116,7 @@ body {
   color: var(--suave);
 }
 
+/* Contador (ej. "12 registros") */
 .tabla-top-badge {
   font-size: 12px;
   font-weight: 700;
@@ -988,81 +1126,142 @@ body {
   background: linear-gradient(135deg, var(--primario), var(--primario-oscuro)) !important;
 }
 
-.tabla-scroll .q-table__middle {
-  max-height: 435px;
-  overflow-y: auto;
-}
-
-/* Cabecera pegada arriba mientras se hace scroll */
-.tabla-scroll thead tr th {
-  position: sticky;
-  z-index: 1;
-  top: 0;
-  background: var(--primario-oscuro);
-}
 
 /* ============================================================
-   RESPONSIVE
+   16. ACCESIBILIDAD
    ============================================================ */
 
+/* Foco visible al navegar con teclado */
+:focus-visible {
+  outline: 3px solid var(--primario);
+  outline-offset: 2px;
+}
+
+/* Si el usuario pidió menos movimiento, se anulan animaciones */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+
+/* ============================================================
+   17. RESPONSIVE (de 1000px a 300px)
+   Los media queries van de mayor a menor. Como todos usan
+   max-width, cada uno hereda lo del anterior y solo
+   sobrescribe lo necesario.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   ≤ 1000px  → Tablets horizontales / laptops pequeñas
+   Las dos columnas dejan de caber: formulario y tabla se apilan.
+   ------------------------------------------------------------ */
+@media (max-width: 1000px) {
+  .page {
+    padding: 10px 18px 20px;
+  }
+
+  /* Usuarios: se anula el margen negativo, o la tabla se
+     montaría sobre el formulario al apilarse */
+  .usuarios-layout {
+    gap: 20px;
+  }
+
+  .usuarios-layout .form-usuario,
+  .usuarios-layout .tabla {
+    flex: 1 1 100%;
+    margin-top: 0;
+  }
+
+  /* El formulario no se estira demasiado en tablets */
+  .usuarios-layout .form-usuario {
+    max-width: 100%;
+  }
+
+  /* Botones de tabla un poco más angostos */
+  .tabla td .q-btn.q-btn--dense:not(.q-btn--round) {
+    width: 150px !important;
+    min-width: 150px !important;
+  }
+}
+
+/* ------------------------------------------------------------
+   ≤ 900px  → Tablets verticales
+   Perfil en una sola columna y estadísticas en 2 columnas.
+   ------------------------------------------------------------ */
 @media (max-width: 900px) {
   .menu-btn {
     display: inline-flex;
   }
 
   .page {
-    padding: 16px;
+    padding: 14px 16px 20px;
   }
 
+  .page-title {
+    font-size: 24px;
+  }
+
+  /* Estadísticas: 3 → 2 columnas */
   .stats {
     grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
   }
 
-  /* El perfil pasa a una sola columna: formulario arriba, tabla abajo */
+  /* Perfil: formulario arriba, tabla abajo */
   .perfil-layout .form-usuario,
   .perfil-layout .tabla-perfil {
     flex: 1 1 100%;
   }
 
-  /* Sin dos columnas ya no hay alto que heredar, así que se fija uno para que el scroll siga funcionando */
+  /* Sin dos columnas ya no hay alto que heredar,
+     se fija uno para que el scroll siga funcionando */
   .perfil-tabla .q-table__middle {
     max-height: 60vh;
   }
-}
 
-@media (max-width: 600px) {
-  .header-user {
-    display: none;
-  }
-
-  .header-title {
-    font-size: 14px;
-  }
-
-  .header-logo {
-    height: 36px;
-  }
-
-  .page-title {
-    font-size: 21px;
-  }
-
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
-
+  /* Los filtros se reparten mejor el ancho */
   .filtros > * {
     max-width: none;
-    flex-basis: 100%;
-  }
-
-  .page-head .q-btn {
-    width: 100%;
+    flex: 1 1 220px;
   }
 
   .tabla-buscar {
-    min-width: 0;
-    flex: 1 1 100%;
+    min-width: 220px;
+  }
+}
+
+/* ------------------------------------------------------------
+   ≤ 700px  → Tablets pequeñas / móviles grandes en horizontal
+   ------------------------------------------------------------ */
+@media (max-width: 700px) {
+  .page-title {
+    font-size: 22px;
+  }
+
+  .stat-card {
+    padding: 16px 14px;
+  }
+
+  .stat-icono {
+    font-size: 30px;
+    padding: 10px;
+  }
+
+  .stat-num {
+    font-size: 28px;
+  }
+
+  .form-usuario {
+    padding: 20px;
+  }
+
+  /* Barra superior de tabla: buscador y título en líneas separadas */
+  .tabla-top {
+    gap: 10px;
   }
 
   .tabla-top-titulo {
@@ -1074,11 +1273,167 @@ body {
   .tabla-top-titulo-texto {
     justify-content: flex-start;
   }
+
+  .tabla td .q-btn.q-btn--dense:not(.q-btn--round) {
+    width: 130px !important;
+    min-width: 130px !important;
+  }
 }
 
+/* ------------------------------------------------------------
+   ≤ 600px  → Móviles
+   Se oculta el usuario del header y los botones ocupan todo el ancho.
+   ------------------------------------------------------------ */
+@media (max-width: 600px) {
+  .header-user {
+    display: none;
+  }
+
+  .header-title {
+    font-size: 14px;
+  }
+
+  .header-logo {
+    height: 34px;
+  }
+
+  .page {
+    padding: 12px 12px 18px;
+  }
+
+  .page-head {
+    margin-bottom: 14px;
+  }
+
+  .page-title {
+    font-size: 21px;
+  }
+
+  .page-sub {
+    font-size: 13px;
+  }
+
+  /* Formulario de 2 columnas → 1 columna */
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Filtros a ancho completo */
+  .filtros > * {
+    max-width: none;
+    flex-basis: 100%;
+  }
+
+  /* Botón de acción a todo el ancho */
+  .page-head .q-btn {
+    width: 100%;
+  }
+
+  .tabla-buscar {
+    min-width: 0;
+    flex: 1 1 100%;
+  }
+
+  /* Tabla más compacta */
+  .tabla thead th {
+    font-size: 11px;
+    letter-spacing: 0.4px;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .tabla tbody td {
+    font-size: 13px;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .tabla td .q-btn.q-btn--dense:not(.q-btn--round) {
+    width: 110px !important;
+    min-width: 110px !important;
+    padding: 4px 8px !important;
+    font-size: 12px;
+  }
+
+  /* Diálogos casi a pantalla completa */
+  .dialog-card,
+  .dialog-chico {
+    width: 95vw;
+  }
+
+  .auth-card {
+    padding: 26px 22px;
+  }
+
+  .auth-title {
+    font-size: 23px;
+  }
+}
+
+/* ------------------------------------------------------------
+   ≤ 480px  → Móviles estándar
+   ------------------------------------------------------------ */
+@media (max-width: 480px) {
+  .header-title {
+    font-size: 13px;
+  }
+
+  .page-title {
+    font-size: 20px;
+  }
+
+  .stats {
+    gap: 12px;
+  }
+
+  .stat-card {
+    gap: 10px;
+    padding: 14px 12px;
+  }
+
+  .stat-icono {
+    font-size: 26px;
+    padding: 9px;
+    border-radius: 12px;
+  }
+
+  .stat-num {
+    font-size: 24px;
+  }
+
+  .stat-label {
+    font-size: 11.5px;
+  }
+
+  .form-usuario {
+    padding: 16px;
+  }
+
+  .profile-sub {
+    font-size: 16px;
+    margin: 20px 0 8px;
+  }
+
+  .dialog-titulo {
+    font-size: 17px;
+  }
+
+  .dialog-texto {
+    font-size: 14px;
+  }
+
+  .brand-logo {
+    width: 84px;
+  }
+}
+
+/* ------------------------------------------------------------
+   ≤ 400px  → Móviles pequeños
+   Estadísticas en 1 columna.
+   ------------------------------------------------------------ */
 @media (max-width: 400px) {
   .page {
-    padding: 12px;
+    padding: 10px;
   }
 
   .stats {
@@ -1091,16 +1446,95 @@ body {
 
   .auth-card {
     padding: 18px;
+    border-radius: 14px;
+  }
+
+  .auth-page {
+    padding: 10px;
+  }
+
+  .header-logo {
+    height: 30px;
+    margin-left: 4px;
+  }
+
+  .header-title {
+    margin-left: 6px;
+  }
+
+  .tabla td .q-btn.q-btn--dense:not(.q-btn--round) {
+    width: 96px !important;
+    min-width: 96px !important;
+    font-size: 11.5px;
   }
 }
 
+/* ------------------------------------------------------------
+   ≤ 360px → Header compacto
+   Reduce título, logo y espacios del header para que el texto
+   "Cursos y Aprendices - SENA" se corte lo menos posible.
+   ------------------------------------------------------------ */
+@media (max-width: 360px) {
+  .header-title {
+    font-size: 11.5px;
+    letter-spacing: 0;
+    margin-left: 4px;
+  }
+
+  .header-logo {
+    height: 26px;
+    margin-left: 2px;
+  }
+
+  .app-header .q-toolbar {
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+}
+
+/* ------------------------------------------------------------
+   ≤ 300px  → Pantallas mínimas (relojes, plegables cerrados)
+   Se reducen textos y espacios al mínimo legible.
+   ------------------------------------------------------------ */
 @media (max-width: 300px) {
+  .page {
+    padding: 8px;
+  }
+
   .page-title {
     font-size: 18px;
+    padding-left: 12px;
+  }
+
+  .page-title::before {
+    width: 4px;
+  }
+
+  .page-sub {
+    font-size: 12px;
+    padding-left: 12px;
+  }
+
+  .header-title {
+    font-size: 12px;
   }
 
   .auth-title {
     font-size: 20px;
+  }
+
+  .auth-sub {
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
+
+  .auth-logo {
+    width: 90px;
+  }
+
+  .auth-lema {
+    font-size: 12px;
+    padding: 8px 10px;
   }
 
   .dialog-titulo {
@@ -1111,22 +1545,32 @@ body {
     font-size: 16px;
   }
 
-  .auth-logo {
-    width: 90px;
+  .stat-card {
+    flex-direction: column;   /* Icono arriba, texto abajo */
+    text-align: center;
+    padding: 12px 10px;
   }
-}
 
-/* Accesibilidad: foco visible */
-:focus-visible {
-  outline: 3px solid var(--primario);
-  outline-offset: 2px;
-}
+  .stat-num {
+    font-size: 22px;
+  }
 
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
+  .form-usuario {
+    padding: 12px;
+  }
+
+  .tabla thead th {
+    font-size: 10px;
+  }
+
+  .tabla tbody td {
+    font-size: 12px;
+  }
+
+  .tabla td .q-btn.q-btn--dense:not(.q-btn--round) {
+    width: 84px !important;
+    min-width: 84px !important;
+    font-size: 11px;
+    padding: 4px 6px !important;
   }
 }
