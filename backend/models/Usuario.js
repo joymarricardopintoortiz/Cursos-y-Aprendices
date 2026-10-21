@@ -12,6 +12,10 @@ import { Schema, model } from "mongoose";
 
 const UsuarioSchema = new Schema(
   {
+    documento: {
+      type: String,
+      default: "",
+    },
     nombre: {
       type: String,
       required: true,

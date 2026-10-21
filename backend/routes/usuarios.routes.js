@@ -3,31 +3,27 @@ import { usuarioCtrl } from "../controller/usuario.controller.js";
 import { usuarioVali } from "../validations/usuario.validation.js";
 import { validateJWT } from "../middlewares/validateJWT.js";
 
-const { validateRegisterUsuario, validateLogin } = usuarioVali;
-const { registerUsuario, loginUsuario } = usuarioCtrl;
+const { validateRegisterUsuario, validateLogin, validateUpdateUsuario } = usuarioVali;
+const { registerUsuario, loginUsuario, getUsuarios, updateUsuario } = usuarioCtrl;
 
 const routerUsuario = Router();
 
-// El LOGIN es la unica ruta publica de todo el backend: es la puerta por la que
-// se consigue el token. Si tambien pidiera token, nadie podria entrar nunca
-// (el clasico problema del huevo y la gallina).
-//
-// POST /api/usuarios/login    -> iniciar sesion y recibir el token
+const soloAdmin = (req, res, next) => {
+  if (req.usuario.rol === "ADMIN") return next();
+  res.status(403).json({ msg: "No tienes permiso para esta operacion" });
+};
+
+const puedeEditar = (req, res, next) => {
+  if (req.usuario.rol === "ADMIN" || req.usuario._id.toString() === req.params.id) return next();
+  res.status(403).json({ msg: "No tienes permiso para esta operacion" });
+};
+
 routerUsuario.post("/login", validateLogin, loginUsuario);
 
-// El REGISTRO es interno: crear cuentas es una tarea de alguien que ya entro,
-// no algo que cualquiera pueda hacer desde afuera. Por eso lleva validateJWT
-// adelante, igual que las rutas de cursos y aprendices.
-//
-// ¿Y el primer usuario? Lo crea el seed (npm run seed), que escribe
-// directamente en la base de datos sin pasar por la API.
-//
-// POST /api/usuarios/register -> crear cuenta (requiere token)
-routerUsuario.post(
-  "/register",
-  validateJWT,
-  validateRegisterUsuario,
-  registerUsuario
-);
+routerUsuario.post("/register", validateJWT, validateRegisterUsuario, registerUsuario);
+
+routerUsuario.get("/", validateJWT, soloAdmin, getUsuarios);
+
+routerUsuario.put("/update/:id", validateJWT, puedeEditar, validateUpdateUsuario, updateUsuario);
 
 export { routerUsuario };

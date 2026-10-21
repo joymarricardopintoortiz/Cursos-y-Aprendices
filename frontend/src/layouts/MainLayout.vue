@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '../stores/auth'
 import { useSolicitudesStore } from '../stores/solicitudes'
+import { usuariosService } from '../services/usuarios.service'
 import { Notify } from 'quasar'
 import logo from '../assets/logo-sena.png'
 
@@ -31,6 +32,17 @@ onMounted(() => {
         Notify.create({ type: 'positive', message: `¡Felicidades! Se confirmó tu solicitud al curso "${s.cursoNombre}".`, icon: 'celebration' })
         solicitudesStore.marcarVista(s.id)
       })
+
+    if (auth.documento && !auth.usuario?.documento) {
+      usuariosService
+        .actualizar(auth.usuario._id, {
+          documento: auth.documento,
+          nombre: auth.usuario.nombre,
+          email: auth.usuario.email,
+        })
+        .then(({ data }) => auth.setSesion({ token: auth.token, usuario: data.usuario }))
+        .catch(() => {})
+    }
   }
 })
 </script>

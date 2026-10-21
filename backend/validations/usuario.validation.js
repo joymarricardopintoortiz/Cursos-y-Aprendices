@@ -8,7 +8,7 @@ import { check } from "express-validator";
 import { validateFields } from "../middlewares/validateFields.js";
 import { usuarioHelper } from "../helpers/usuario.helper.js";
 
-const { validateExistEmail } = usuarioHelper;
+const { validateExistEmail, validateExistUsuarioById } = usuarioHelper;
 
 const usuarioVali = {};
 
@@ -31,6 +31,10 @@ usuarioVali.validateRegisterUsuario = [
     .bail()
     .isLength({ min: 6 })
     .withMessage("La contraseña debe tener al menos 6 caracteres"),
+    check("documento", "El documento debe tener de 6 a 12 digitos")
+    .optional({ checkFalsy: true })
+    .trim()
+    .matches(/^\d{6,12}$/),
   validateFields,
 ];
 
@@ -49,6 +53,37 @@ usuarioVali.validateLogin = [
     .isEmail()
     .withMessage("El email no es valido"),
   check("password", "La contraseña es obligatoria").notEmpty(),
+  validateFields,
+];
+
+usuarioVali.validateUpdateUsuario = [
+  check("id", "El id no es valido")
+    .isMongoId()
+    .bail()
+    .custom(async (id) => {
+      await validateExistUsuarioById(id);
+    }),
+  check("nombre", "El nombre es obligatorio").trim().notEmpty(),
+  check("email", "El email es obligatorio")
+    .trim()
+    .notEmpty()
+    .bail()
+    .isEmail()
+    .withMessage("El email no es valido")
+    .bail()
+    .matches(/^[^\s@]+@sena\.edu\.co$/i)
+    .withMessage("Solo se permiten correos @sena.edu.co")
+    .bail()
+    .custom(async (email, { req }) => {
+      await validateExistEmail(email, req.params.id);
+    }),
+  check("documento", "El documento debe tener de 6 a 12 digitos")
+    .optional({ checkFalsy: true })
+    .trim()
+    .matches(/^\d{6,12}$/),
+  check("password", "La contraseña debe tener al menos 6 caracteres")
+    .optional({ checkFalsy: true })
+    .isLength({ min: 6 }),
   validateFields,
 ];
 

@@ -20,11 +20,12 @@ const usuarioCtrl = {};
  * personas con la misma contraseña no terminen con el mismo hash.
  */
 usuarioCtrl.registerUsuario = async (req, res) => {
-  const { nombre, email, password } = req.body;
+  const { nombre, email, password, documento } = req.body;
   try {
     const newUsuario = new Usuario({
       nombre: nombre.toUpperCase().trim(),
       email: email.toLowerCase().trim(),
+      documento: (documento || "").trim(),
       password,
     });
 
@@ -74,6 +75,34 @@ usuarioCtrl.loginUsuario = async (req, res) => {
     const token = await generarJWT(usuario._id);
 
     res.json({ usuario, token });
+  } catch (error) {
+    res.status(400).json({ msg: "No fue posible terminar la operacion" });
+  }
+};
+
+usuarioCtrl.getUsuarios = async (req, res) => {
+  try {
+    const usuarios = await Usuario.find().sort({ createdAt: -1 });
+    res.json(usuarios);
+  } catch (error) {
+    res.status(400).json({ msg: "No fue posible terminar la operacion" });
+  }
+};
+
+usuarioCtrl.updateUsuario = async (req, res) => {
+  const { id } = req.params;
+  const { nombre, email, documento, password } = req.body;
+  try {
+    const cambios = {
+      nombre: nombre.toUpperCase().trim(),
+      email: email.toLowerCase().trim(),
+      documento: (documento || "").trim(),
+    };
+    if (password) {
+      cambios.password = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
+    }
+    const usuario = await Usuario.findByIdAndUpdate(id, cambios, { new: true });
+    res.json({ msg: "Usuario actualizado correctamente", usuario });
   } catch (error) {
     res.status(400).json({ msg: "No fue posible terminar la operacion" });
   }

@@ -4,9 +4,10 @@ import { storeToRefs } from 'pinia'
 import { useAuthStore } from '../stores/auth'
 import { useSolicitudesStore } from '../stores/solicitudes'
 import { useNotify } from '../composables/useNotify'
+import { usuariosService } from '../services/usuarios.service'
 
 const auth = useAuthStore()
-const { ok } = useNotify()
+const { ok, error } = useNotify()
 const solicitudesStore = useSolicitudesStore()
 const { solicitudes } = storeToRefs(solicitudesStore)
 
@@ -24,7 +25,7 @@ const etiquetaEstado = (estado) =>
   estado === 'aceptada' ? 'Aceptado' : estado === 'rechazada' ? 'Rechazado' : 'Pendiente'
 
 const form = ref({
-  documento: auth.documento,
+  documento: auth.usuario?.documento || auth.documento,
   nombre: auth.usuario?.nombre ?? '',
   email: auth.usuario?.email ?? '',
   password: '',
@@ -32,24 +33,31 @@ const form = ref({
 const verClave = ref(false)
 
 const req = (v) => !!v || 'Campo obligatorio'
-const emailValido = (v) => /.+@.+\..+/.test(v) || 'Email no válido'
+const emailValido = (v) => /^[^\s@]+@sena\.edu\.co$/i.test((v || '').trim()) || 'Solo se permiten correos @sena.edu.co'
 const minimo = (v) => !v || v.length >= 6 || 'Mínimo 6 caracteres'
 
 const documentoValido = (v) => /^\d{6,12}$/.test(v) || 'Solo números, de 6 a 12 dígitos'
 
-const guardar = () => {
-  auth.usuario = {
-    ...auth.usuario,
-    nombre: form.value.nombre,
-    email: form.value.email,
+const guardando = ref(false)
+
+const guardar = async () => {
+  guardando.value = true
+  try {
+    const { data } = await usuariosService.actualizar(auth.usuario._id, {
+      documento: form.value.documento,
+      nombre: form.value.nombre,
+      email: form.value.email,
+      password: form.value.password,
+    })
+    auth.setSesion({ token: auth.token, usuario: data.usuario })
+    auth.setDocumento(form.value.documento)
+    ok(form.value.password ? 'Datos y contraseña actualizados' : 'Perfil actualizado')
+    form.value.password = ''
+  } catch (e) {
+    error(e)
+  } finally {
+    guardando.value = false
   }
-  auth.setDocumento(form.value.documento)
-  if (form.value.password) {
-    ok('Datos actualizados. La contraseña no se puede cambiar desde aquí.')
-  } else {
-    ok('Perfil actualizado')
-  }
-  form.value.password = ''
 }
 </script>
 
