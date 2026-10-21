@@ -852,6 +852,59 @@ body {
   margin-top: -120px;
 }
 
+/* ============================================================
+   PERFIL: formulario a la izquierda, solicitudes a la derecha
+   ============================================================ */
+
+.perfil-layout {
+  display: flex;
+  align-items: stretch; /* la columna derecha hereda el alto del formulario */
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.perfil-layout .form-usuario {
+  flex: 0 0 380px;
+  max-width: 100%;
+}
+
+/* Columna derecha: título arriba y la tabla ocupando el resto */
+.perfil-layout .tabla-perfil {
+  flex: 1 1 520px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.perfil-layout .tabla-perfil .profile-sub {
+  margin-top: 0;
+  flex: 0 0 auto;
+}
+
+/* La tabla se estira al alto del formulario (contenedor interno incluido) */
+.perfil-tabla,
+.perfil-tabla .q-table__container {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* El cuerpo con las filas hace scroll; la cabecera queda fija arriba */
+.perfil-tabla .q-table__middle {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* Cabecera pegada arriba mientras se hace scroll */
+.perfil-tabla thead tr th {
+  position: sticky;
+  z-index: 1;
+  top: 0;
+  background: var(--primario-oscuro);
+}
+
 /* Tabla con altura fija y scroll vertical */
 .tabla-scroll {
   max-height: 520px; /* ajusta: ~8 filas visibles */
@@ -930,6 +983,17 @@ body {
 
   .stats {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* El perfil pasa a una sola columna: formulario arriba, tabla abajo */
+  .perfil-layout .form-usuario,
+  .perfil-layout .tabla-perfil {
+    flex: 1 1 100%;
+  }
+
+  /* Sin dos columnas ya no hay alto que heredar, así que se fija uno para que el scroll siga funcionando */
+  .perfil-tabla .q-table__middle {
+    max-height: 60vh;
   }
 }
 
