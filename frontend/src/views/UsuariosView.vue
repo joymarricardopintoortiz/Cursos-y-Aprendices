@@ -42,6 +42,16 @@ const verClaveEditar = ref(false)
 
 const req = (v) => !!(v && String(v).trim()) || 'Campo obligatorio'
 const emailValido = (v) => /^[^\s@]+@sena\.edu\.co$/i.test((v || '').trim()) || 'Solo se permiten correos @sena.edu.co'
+// Regla de correo: si ya existe una cuenta con ese correo (y no es la que se
+// esta editando) se muestra el error a nivel de campo sin hacer el POST.
+// Se compara en minusculas porque el backend guarda email.toLowerCase().
+const emailRepetido = (excluirId) => (v) => {
+  const mail = String(v ?? '').trim().toLowerCase()
+  const repetido = usuarios.value.some(
+    (u) => String(u.email ?? '').trim().toLowerCase() === mail && u._id !== excluirId,
+  )
+  return !repetido || 'Este correo ya está registrado'
+}
 const minimo = (v) => (v && v.length >= 6) || 'Mínimo 6 caracteres'
 const minimoOpcional = (v) => !v || v.length >= 6 || 'Mínimo 6 caracteres'
 const confirmarOpcional = (v) => {
@@ -189,7 +199,7 @@ onBeforeUnmount(() => clearInterval(temporizador))
           label="Correo"
           hint="Debe terminar en @sena.edu.co"
           autocomplete="off"
-          :rules="[req, emailValido]"
+          :rules="[req, emailValido, emailRepetido(null)]"
         />
         <q-input
           outlined
@@ -276,7 +286,7 @@ onBeforeUnmount(() => clearInterval(temporizador))
               label="Correo"
               class="completo"
               autocomplete="off"
-              :rules="[req, emailValido]"
+              :rules="[req, emailValido, emailRepetido(editando._id)]"
             />
             <q-input
               outlined

@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { cursosService } from '../../services/cursos.service'
 import { useNotify } from '../../composables/useNotify'
 import ErrorList from '../shared/ErrorList.vue'
@@ -9,7 +9,7 @@ const props = defineProps({
 })
 const emit = defineEmits(['guardado', 'cancelar'])
 
-const { ok, listaErrores } = useNotify()
+const { ok, error, listaErrores } = useNotify()
 
 const form = ref({
   codigo: props.curso?.codigo ?? '',
@@ -18,9 +18,34 @@ const form = ref({
 })
 const errores = ref([])
 const guardando = ref(false)
+// Cursos ya registrados en la base, para validar ANTES de enviar y no
+// provocar un 400 en la consola del navegador.
+const cursosCargados = ref([])
 
 const req = (v) => (v !== '' && v !== null && v !== undefined) || 'Campo obligatorio'
 const positivo = (v) => v > 0 || 'Debe ser mayor a 0'
+
+// Regla del campo Codigo: si el codigo ya existe (y no es el del curso que se
+// esta editando) se muestra el error a nivel de campo sin hacer el POST.
+// Se compara en mayusculas porque el backend guarda codigo.toUpperCase().
+const codigoNoRepetido = (v) => {
+  const cod = String(v ?? '').trim().toUpperCase()
+  const repetido = cursosCargados.value.some(
+    (c) => String(c.codigo ?? '').trim().toUpperCase() === cod && c._id !== props.curso?._id,
+  )
+  return !repetido || 'Este código ya está registrado'
+}
+
+onMounted(async () => {
+  try {
+    // Lista completa sin filtros: la vista puede venir filtrada por estado y
+    // ocultaria codigos de cursos inactivos.
+    const { data } = await cursosService.listar()
+    cursosCargados.value = data
+  } catch (e) {
+    error(e)
+  }
+})
 
 const guardar = async () => {
   errores.value = []
@@ -44,7 +69,7 @@ const guardar = async () => {
     <q-form novalidate @submit="guardar">
       <q-card-section class="dialog-titulo">{{ curso ? 'Editar curso' : 'Nuevo curso' }}</q-card-section>
       <q-card-section class="form-grid">
-        <q-input outlined dense v-model="form.codigo" label="Código" :rules="[req]" />
+        <q-input outlined dense v-model="form.codigo" label="Código" :rules="[req, codigoNoRepetido]" />
         <q-input outlined dense v-model.number="form.duracion" type="number" label="Duración (horas)" :rules="[req, positivo]" />
         <q-input outlined dense v-model="form.nombre" label="Nombre" class="completo" :rules="[req]" />
       </q-card-section>
