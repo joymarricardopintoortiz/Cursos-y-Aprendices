@@ -1149,11 +1149,67 @@ body {
 
 
 /* ============================================================
-   17. RESPONSIVE (de 1000px a 300px)
+   17. RESPONSIVE (de 1192px a 300px)
    Los media queries van de mayor a menor. Como todos usan
    max-width, cada uno hereda lo del anterior y solo
    sobrescribe lo necesario.
    ============================================================ */
+
+/* ------------------------------------------------------------
+   ≤ 1192px  → Laptops pequeñas / tablets grandes
+   Aquí aún caben las dos columnas, pero se suelta el margen
+   negativo de la tabla de Usuarios (si no, se monta encima
+   del formulario) y se reducen títulos y espacios.
+   ------------------------------------------------------------ */
+@media (max-width: 1192px) {
+  .page {
+    padding: 10px 20px 22px;
+  }
+
+  .page-title {
+    font-size: 25px;
+  }
+
+  /* Sin margen negativo: si la tabla baja de línea no se
+     monta encima del botón CREAR USUARIO */
+  .usuarios-layout {
+    gap: 20px;
+  }
+
+  .usuarios-layout .tabla {
+    margin-top: 0;
+  }
+
+  /* Los layouts no desbordan: ancho completo con mínimo 0 */
+  .usuarios-layout .form-usuario,
+  .perfil-layout .form-usuario {
+    flex: 1 1 360px;
+    min-width: 0;
+    max-width: 480px;
+  }
+
+  .usuarios-layout .tabla,
+  .perfil-layout .tabla-perfil {
+    flex: 1 1 480px;
+    min-width: 0;
+  }
+
+  /* Barra superior de tabla: buscador y título caben juntos */
+  .tabla-buscar {
+    min-width: 240px;
+  }
+
+  /* Botones de tabla un poco más angostos */
+  .tabla td .q-btn.q-btn--dense:not(.q-btn--round) {
+    width: 160px !important;
+    min-width: 160px !important;
+  }
+
+  /* Diálogo principal sin pasarse del ancho útil */
+  .dialog-card {
+    width: 540px;
+  }
+}
 
 /* ------------------------------------------------------------
    ≤ 1000px  → Tablets horizontales / laptops pequeñas
