@@ -50,6 +50,11 @@ usuarioCtrl.registerUsuario = async (req, res) => {
  * contraseña equivocada) responden casi lo mismo. Es a proposito: si dijeramos
  * "ese email no existe", le estariamos confirmando a un atacante cuales correos
  * SI estan registrados.
+ *
+ * Ademas responden 200 con { error } y NO 400: un 400 se marca solo en la
+ * consola del navegador (peticion fallida en rojo) aunque el frontend lo
+ * muestre bonito. El frontend revisa data.error y pinta el mensaje en el
+ * formulario, asi la consola queda limpia.
  */
 usuarioCtrl.loginUsuario = async (req, res) => {
   const { email, password } = req.body;
@@ -57,18 +62,18 @@ usuarioCtrl.loginUsuario = async (req, res) => {
     const usuario = await Usuario.findOne({ email: email.toLowerCase().trim() });
 
     if (!usuario) {
-      return res.status(400).json({ msg: "Usuario o contraseña incorrectos" });
+      return res.json({ error: "Usuario o contraseña incorrectos" });
     }
 
     if (usuario.status !== 0) {
-      return res.status(400).json({ msg: "El usuario esta inactivo" });
+      return res.json({ error: "El usuario esta inactivo" });
     }
 
     // Compara la contraseña escrita contra el hash guardado.
     const passwordValido = bcrypt.compareSync(password, usuario.password);
 
     if (!passwordValido) {
-      return res.status(400).json({ msg: "Usuario o contraseña incorrectos" });
+      return res.json({ error: "Usuario o contraseña incorrectos" });
     }
 
     // Todo bien: se genera el token con el id del usuario adentro.

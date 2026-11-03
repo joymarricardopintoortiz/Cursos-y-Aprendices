@@ -4,7 +4,6 @@ import { useRouter } from 'vue-router'
 import { usuariosService } from '../services/usuarios.service'
 import { useAuthStore } from '../stores/auth'
 import { useNotify } from '../composables/useNotify'
-import ErrorList from '../components/shared/ErrorList.vue'
 import logo from '../assets/logoSenaVerde-trim.png'
 
 const router = useRouter()
@@ -14,21 +13,29 @@ const { listaErrores } = useNotify()
 const form = ref({ email: '', password: '' })
 const verClave = ref(false)
 const cargando = ref(false)
-const errores = ref([])
+// Error de login: se pinta DEBAJO del campo de contraseña (igual que las
+// demas validaciones), no en un cartel aparte.
+const errorCampo = ref('')
 const dialogoOlvide = ref(false)
 
 const req = (v) => !!v || 'Campo obligatorio'
 const emailValido = (v) => /.+@.+\..+/.test(v) || 'Email no válido'
 
 const ingresar = async () => {
-  errores.value = []
+  errorCampo.value = ''
   cargando.value = true
   try {
     const { data } = await usuariosService.login(form.value)
+    // Credenciales rechazadas: el backend responde 200 con { error } para no
+    // dejar una peticion fallida (400) marcada en rojo en la consola.
+    if (data.error) {
+      errorCampo.value = data.error
+      return
+    }
     auth.setSesion(data)
     router.push('/')
   } catch (e) {
-    errores.value = listaErrores(e)
+    errorCampo.value = listaErrores(e).join('. ')
   } finally {
     cargando.value = false
   }
@@ -42,13 +49,21 @@ const ingresar = async () => {
     <p class="auth-sub">Cursos y Aprendices</p>
     <q-form novalidate class="form-col" @submit="ingresar">
       <q-input outlined v-model="form.email" type="email" label="Correo" :rules="[req, emailValido]" />
-      <q-input outlined v-model="form.password" :type="verClave ? 'text' : 'password'" label="Contraseña" :rules="[req]">
+      <q-input
+        outlined
+        v-model="form.password"
+        :type="verClave ? 'text' : 'password'"
+        label="Contraseña"
+        :rules="[req]"
+        :error="!!errorCampo"
+        :error-message="errorCampo"
+        @update:model-value="errorCampo = ''"
+      >
         <template #append>
           <q-icon :name="verClave ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="verClave = !verClave" />
         </template>
       </q-input>
       <p class="auth-olvide" @click="dialogoOlvide = true">¿Olvidaste tu contraseña?</p>
-      <error-list :errores="errores" />
       <q-btn unelevated color="primary" type="submit" label="Ingresar" icon="login" size="md" class="full-width" :loading="cargando" />
       <p class="auth-lema">¡Aprender hoy es construir el país de mañana!</p>
     </q-form>
