@@ -108,4 +108,27 @@ usuarioCtrl.updateUsuario = async (req, res) => {
   }
 };
 
+/**
+ * Consulta si un correo esta disponible.
+ *
+ * Los usuarios normales NO pueden leer la lista completa de usuarios
+ * (GET / es solo ADMIN), pero necesitan saber si su correo ya existe antes
+ * de guardar el perfil. El correo del propio usuario se reporta como
+ * disponible para que pueda conservarlo.
+ *
+ * GET /api/usuarios/email-disponible?email=x@sena.edu.co
+ * Responde { disponible: true | false }
+ */
+usuarioCtrl.verificarEmail = async (req, res) => {
+  const { email } = req.query;
+  try {
+    const mail = String(email ?? "").toLowerCase().trim();
+    const existe = await Usuario.findOne({ email: mail });
+    const esMio = existe?._id.toString() === req.usuario._id.toString();
+    res.json({ disponible: !existe || esMio });
+  } catch (error) {
+    res.status(400).json({ msg: "No fue posible terminar la operacion" });
+  }
+};
+
 export { usuarioCtrl };

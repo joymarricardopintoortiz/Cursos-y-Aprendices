@@ -54,7 +54,7 @@ const ingresar = async () => {
     </q-form>
   </q-card>
 
-  <q-dialog v-model="dialogoOlvide">
+  <q-dialog v-model="dialogoOlvide" persistent>
     <q-card class="dialog-card">
       <q-card-section class="dialog-titulo row items-center no-wrap">
         <q-icon name="lock_reset" size="26px" class="q-mr-sm" color="primary" />

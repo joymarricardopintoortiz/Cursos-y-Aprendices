@@ -36,6 +36,19 @@ const req = (v) => !!v || 'Campo obligatorio'
 const emailValido = (v) => /^[^\s@]+@sena\.edu\.co$/i.test((v || '').trim()) || 'Solo se permiten correos @sena.edu.co'
 const minimo = (v) => !v || v.length >= 6 || 'Mínimo 6 caracteres'
 
+// El usuario normal no puede leer la lista de usuarios (es solo admin), asi
+// que el backend le dice si el correo ya existe. Regla asincronica: mientras
+// responde, Quasar muestra el campo en validacion y no se envia el PUT.
+const emailDisponible = async (v) => {
+  const mail = String(v ?? '').trim().toLowerCase()
+  try {
+    const { data } = await usuariosService.verificarEmail(mail)
+    return data.disponible || 'Este correo ya está registrado'
+  } catch {
+    return true // sin conexion: que decida el servidor al guardar
+  }
+}
+
 const documentoValido = (v) => /^\d{6,12}$/.test(v) || 'Solo números, de 6 a 12 dígitos'
 
 const guardando = ref(false)
@@ -74,7 +87,7 @@ const guardar = async () => {
       <q-form novalidate class="form-usuario form-col" @submit="guardar">
         <q-input outlined dense v-model="form.documento" label="Numero de documento" inputmode="numeric" maxlength="12" :rules="[req, documentoValido]"/>
         <q-input outlined dense v-model="form.nombre" label="Nombre" :rules="[req]" />
-        <q-input outlined dense v-model="form.email" type="email" label="Correo" :rules="[req, emailValido]" />
+        <q-input outlined dense v-model="form.email" type="email" label="Correo" :rules="[req, emailValido, emailDisponible]" />
         <q-input
           outlined
           dense

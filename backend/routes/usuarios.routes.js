@@ -5,7 +5,7 @@ import { validateJWT } from "../middlewares/validateJWT.js";
 import { soloAdmin } from "../middlewares/validateRole.js";
 
 const { validateRegisterUsuario, validateLogin, validateUpdateUsuario } = usuarioVali;
-const { registerUsuario, loginUsuario, getUsuarios, updateUsuario } = usuarioCtrl;
+const { registerUsuario, loginUsuario, getUsuarios, updateUsuario, verificarEmail } = usuarioCtrl;
 
 const routerUsuario = Router();
 
@@ -19,6 +19,11 @@ routerUsuario.post("/login", validateLogin, loginUsuario);
 routerUsuario.post("/register", validateJWT, validateRegisterUsuario, registerUsuario);
 
 routerUsuario.get("/", validateJWT, soloAdmin, getUsuarios);
+
+// Disponibilidad de un correo: la puede consultar cualquier usuario logueado
+// (los normales no pueden leer la lista completa, pero necesitan saber si su
+// correo ya existe antes de guardar el perfil).
+routerUsuario.get("/email-disponible", validateJWT, verificarEmail);
 
 routerUsuario.put("/update/:id", validateJWT, puedeEditar, validateUpdateUsuario, updateUsuario);
 

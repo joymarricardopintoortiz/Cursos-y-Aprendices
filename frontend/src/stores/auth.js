@@ -8,7 +8,11 @@ export const useAuthStore = defineStore('auth', {
   }),
   getters: {
     esAdmin: (state) => state.usuario?.rol === 'ADMIN',
-    documento: (state) => state.documentos[state.usuario?._id] ?? '',
+    // Primero el documento que viene del backend en la sesion (el que el
+    // admin puso al crear el usuario); el mapa local es solo respaldo para
+    // sesiones antiguas donde el usuario lo guardo en "Mi perfil".
+    documento: (state) =>
+      state.usuario?.documento || state.documentos[state.usuario?._id] || '',
   },
   actions: {
     setSesion({ token, usuario }) {
