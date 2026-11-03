@@ -1,5 +1,3 @@
 <template>
-  <q-app>
-    <router-view />
-  </q-app>
+  <router-view />
 </template>

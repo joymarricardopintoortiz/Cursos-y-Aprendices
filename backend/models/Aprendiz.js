@@ -1,6 +1,6 @@
 /**
  * @typedef {Object} Aprendiz
- * @property {string} documento - Numero de documento (unico).
+ * @property {string} documento - Numero de documento (unico por curso).
  * @property {string} nombre - Nombre completo del aprendiz.
  * @property {string} email - Correo del aprendiz.
  * @property {Schema.Types.ObjectId} curso - Curso al que pertenece (relacion con Curso).

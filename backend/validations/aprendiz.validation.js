@@ -9,7 +9,7 @@ import { check } from "express-validator";
 import { validateFields } from "../middlewares/validateFields.js";
 import { aprendizHelper } from "../helpers/aprendiz.helper.js";
 
-const { validateExistAprendizById, validateExistCurso, validateExistDocumento } =
+const { validateExistAprendizById, validateExistCurso, validateExistDocumentoCurso } =
   aprendizHelper;
 
 const aprendizVali = {};
@@ -21,8 +21,8 @@ aprendizVali.validateRegisterAprendiz = [
   check("documento", "El documento es obligatorio")
     .notEmpty()
     .bail()
-    .custom(async (documento) => {
-      await validateExistDocumento(documento);
+    .custom(async (documento, { req }) => {
+      await validateExistDocumentoCurso(documento, req.body.curso);
     }),
   check("nombre", "El nombre es obligatorio").notEmpty(),
   check("email", "El email es obligatorio")
@@ -56,7 +56,7 @@ aprendizVali.validateUpdateAprendiz = [
     .notEmpty()
     .bail()
     .custom(async (documento, { req }) => {
-      await validateExistDocumento(documento, req.params.id);
+      await validateExistDocumentoCurso(documento, req.body.curso, req.params.id);
     }),
   check("nombre", "El nombre es obligatorio").notEmpty(),
   check("email", "El email es obligatorio")
