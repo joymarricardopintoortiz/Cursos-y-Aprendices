@@ -1,10 +1,11 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '../stores/auth'
 import { useSolicitudesStore } from '../stores/solicitudes'
 import { useNotify } from '../composables/useNotify'
 import { usuariosService } from '../services/usuarios.service'
+import { aprendicesService } from '../services/aprendices.service'
 
 const auth = useAuthStore()
 const { ok, error } = useNotify()
@@ -15,6 +16,39 @@ const misSolicitudes = computed(() =>
   solicitudes.value.filter((s) => s.usuarioEmail === auth.usuario?.email),
 )
 
+// Cursos donde ya soy aprendiz en la BD (el admin pudo haberme creado
+// directamente, sin solicitud). Esos tambien deben verse en la tabla.
+const misMatriculas = ref([])
+const cargarMisMatriculas = async () => {
+  try {
+    const { data } = await aprendicesService.listar()
+    const miDoc = String(auth.documento ?? '').trim()
+    if (!miDoc) return
+    misMatriculas.value = data.filter(
+      (a) => String(a.documento ?? '').trim() === miDoc && a.curso,
+    )
+  } catch {
+    // sin conexion: que se vean solo las solicitudes
+  }
+}
+onMounted(cargarMisMatriculas)
+
+// Filas de la tabla: solicitudes + cursos ya matriculados que no tengan
+// solicitud (si la tienen, manda la solicitud para no repetir la fila).
+const filas = computed(() => {
+  const conSolicitud = new Set(misSolicitudes.value.map((s) => s.cursoId))
+  const matriculas = misMatriculas.value
+    .filter((m) => !conSolicitud.has(m.curso._id))
+    .map((m) => ({
+      id: `mat-${m._id}`,
+      cursoId: m.curso._id,
+      cursoNombre: m.curso.nombre,
+      fecha: m.createdAt ? new Date(m.createdAt).toLocaleString() : '—',
+      estado: 'matriculado',
+    }))
+  return [...matriculas, ...misSolicitudes.value]
+})
+
 const columnas = [
   { name: 'curso', label: 'Curso', field: 'cursoNombre', align: 'left' },
   { name: 'fecha', label: 'Fecha', field: 'fecha', align: 'left' },
@@ -22,7 +56,13 @@ const columnas = [
 ]
 
 const etiquetaEstado = (estado) =>
-  estado === 'aceptada' ? 'Aceptado' : estado === 'rechazada' ? 'Rechazado' : 'Pendiente'
+  estado === 'aceptada'
+    ? 'Aceptado'
+    : estado === 'rechazada'
+      ? 'Rechazado'
+      : estado === 'matriculado'
+        ? 'Matriculado'
+        : 'Pendiente'
 
 const form = ref({
   documento: auth.usuario?.documento || auth.documento,
@@ -110,7 +150,7 @@ const guardar = async () => {
           flat
           bordered
           row-key="id"
-          :rows="misSolicitudes"
+          :rows="filas"
           :columns="columnas"
           rows-per-page-label="Filas por página"
           no-data-label="No tienes solicitudes todavía"
@@ -118,13 +158,27 @@ const guardar = async () => {
           <template #body-cell-estado="p">
             <q-td :props="p">
               <q-badge
-                :color="p.row.estado === 'aceptada' ? 'positive' : p.row.estado === 'rechazada' ? 'negative' : 'warning'"
+                :color="
+                  p.row.estado === 'aceptada' || p.row.estado === 'matriculado'
+                    ? 'positive'
+                    : p.row.estado === 'rechazada'
+                      ? 'negative'
+                      : 'warning'
+                "
                 :text-color="p.row.estado === 'pendiente' ? 'dark' : 'white'"
                 rounded
                 class="text-weight-bold q-px-sm q-py-xs"
               >
                 <q-icon
-                  :name="p.row.estado === 'aceptada' ? 'check_circle' : p.row.estado === 'rechazada' ? 'cancel' : 'schedule'"
+                  :name="
+                    p.row.estado === 'aceptada'
+                      ? 'check_circle'
+                      : p.row.estado === 'matriculado'
+                        ? 'how_to_reg'
+                        : p.row.estado === 'rechazada'
+                          ? 'cancel'
+                          : 'schedule'
+                  "
                   size="14px"
                   class="q-mr-xs"
                 />
