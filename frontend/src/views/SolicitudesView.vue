@@ -9,7 +9,7 @@ import ConfirmDialog from '../components/shared/ConfirmDialog.vue'
 
 const solicitudesStore = useSolicitudesStore()
 const { solicitudes } = storeToRefs(solicitudesStore)
-const { ok, error, aviso } = useNotify()
+const { ok, error, aviso, naranja } = useNotify()
 
 const dialogoConfirm = ref(false)
 const accionConfirm = ref('aceptar')
@@ -73,7 +73,7 @@ const aceptar = (s) => {
 
 const rechazar = (s) => {
   solicitudesStore.cambiarEstado(s.id, 'rechazada')
-  ok(`Se rechazó la solicitud de ${s.usuarioNombre}`)
+  naranja(`Se rechazó la solicitud de ${s.usuarioNombre}`)
 }
 
 const pedirConfirmacion = (s, accion) => {

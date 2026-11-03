@@ -9,6 +9,12 @@ export function useNotify() {
     Notify.create({ message: msg, icon: 'warning', color: 'yellow-4', textColor: 'black' })
   }
 
+  // Naranja con letras negras: para acciones negativas que SI se ejecutaron
+  // (como rechazar), no es un error pero tampoco algo positivo.
+  const naranja = (msg) => {
+    Notify.create({ message: msg, icon: 'cancel', color: 'orange', textColor: 'black' })
+  }
+
   const listaErrores = (e) => {
     const lista = e.response?.data?.errors
     if (lista?.length) return lista
@@ -21,5 +27,5 @@ export function useNotify() {
     return lista
   }
 
-  return { ok, error, listaErrores, aviso }
+  return { ok, error, listaErrores, aviso, naranja }
 }
