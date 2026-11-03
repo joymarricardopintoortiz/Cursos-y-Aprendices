@@ -18,6 +18,6 @@ createApp(App)
   .use(Quasar, {
     plugins: { Notify, Dialog },
     lang: quasarLang,
-    config: { notify: { position: 'top', timeout: 3000 } },
+    config: { notify: { position: 'top-right', timeout: 3000 } },
   })
   .mount('#app')

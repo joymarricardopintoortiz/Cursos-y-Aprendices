@@ -8,6 +8,7 @@ const props = defineProps({
   filtro: { type: String, default: '' },
   admin: { type: Boolean, default: true },
   matriculadosIds: { type: Array, default: () => [] },
+  solicitadosIds: { type: Array, default: () => [] },
 })
 const emit = defineEmits(['editar', 'activar', 'desactivar', 'matricular'])
 
@@ -50,12 +51,23 @@ const columnas = computed(() => {
     </template>
     <template #body-cell-matricula="p">
       <q-td :props="p">
+        <!-- Ya aceptado o ya registrado en la BD: no se puede volver a pedir. -->
         <q-btn
           v-if="matriculadosIds.includes(p.row._id)"
           unelevated
           disabled
           dense
           icon="how_to_reg"
+          label="Matriculado"
+          color="positive"
+        />
+        <!-- Solicitud enviada, esperando respuesta del admin. -->
+        <q-btn
+          v-else-if="solicitadosIds.includes(p.row._id)"
+          unelevated
+          disabled
+          dense
+          icon="hourglass_top"
           label="Solicitado"
           color="grey-5"
         />

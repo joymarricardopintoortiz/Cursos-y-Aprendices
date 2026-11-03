@@ -9,7 +9,7 @@ import ConfirmDialog from '../components/shared/ConfirmDialog.vue'
 
 const solicitudesStore = useSolicitudesStore()
 const { solicitudes } = storeToRefs(solicitudesStore)
-const { ok, error } = useNotify()
+const { ok, error, aviso } = useNotify()
 
 const dialogoConfirm = ref(false)
 const accionConfirm = ref('aceptar')
@@ -40,6 +40,18 @@ const crearAprendiz = async (s, documento) => {
     solicitudesStore.cambiarEstado(s.id, 'aceptada')
     ok(`Se aceptó la solicitud de ${s.usuarioNombre} y se registró en Aprendices`)
   } catch (e) {
+    // El aprendiz ya estaba matriculado en ese curso: el objetivo de la
+    // solicitud ya se cumplio, asi que se acepta igual y se avisa en amarillo
+    // para no dejar la fila trabada repitiendo el mismo 400.
+    // Ojo: las validaciones llegan en data.errors (lista) y data.msg es
+    // "Error en la validacion", por eso se revisan las dos vias.
+    const datos = e.response?.data
+    const texto = [datos?.msg, ...(datos?.errors ?? [])].filter(Boolean).join(' ')
+    if (texto.includes('ya esta matriculado')) {
+      aviso(`${s.usuarioNombre} ya estaba matriculado en este curso. Solicitud aceptada.`)
+      solicitudesStore.cambiarEstado(s.id, 'aceptada')
+      return
+    }
     error(e)
   }
 }

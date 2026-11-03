@@ -2,6 +2,7 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { cursosService } from '../services/cursos.service'
+import { aprendicesService } from '../services/aprendices.service'
 import { useNotify } from '../composables/useNotify'
 import { useAuthStore } from '../stores/auth'
 import { useSolicitudesStore } from '../stores/solicitudes'
@@ -25,11 +26,40 @@ const seleccionado = ref(null)
 const solicitudesStore = useSolicitudesStore()
 const { solicitudes } = storeToRefs(solicitudesStore)
 
-const matriculadosIds = computed(() =>
+// Cursos en los que mi documento ya figura como aprendiz en la BD.
+const aprendizCursoIds = ref([])
+
+// Cursos donde ya soy ACEPTADO o donde ya existo como aprendiz en la base
+// (el admin pudo haberme creado directamente, sin solicitud). En esos casos
+// el boton queda "Matriculado" y no se puede volver a pedir.
+const matriculadosIds = computed(() => {
+  const porSolicitud = solicitudes.value
+    .filter((s) => s.usuarioEmail === auth.usuario?.email && s.estado === 'aceptada')
+    .map((s) => s.cursoId)
+  return [...new Set([...porSolicitud, ...aprendizCursoIds.value])]
+})
+
+// Cursos con solicitud en curso (pendiente de respuesta del admin).
+const solicitadosIds = computed(() =>
   solicitudes.value
-    .filter((s) => s.usuarioEmail === auth.usuario?.email && s.estado !== 'rechazada')
+    .filter((s) => s.usuarioEmail === auth.usuario?.email && s.estado === 'pendiente')
     .map((s) => s.cursoId),
 )
+
+const cargarMisMatriculas = async () => {
+  if (auth.esAdmin) return // los admin no ven la columna de matricula
+  try {
+    const { data } = await aprendicesService.listar()
+    const miDoc = String(auth.documento ?? '').trim()
+    if (!miDoc) return
+    aprendizCursoIds.value = data
+      .filter((a) => String(a.documento ?? '').trim() === miDoc)
+      .map((a) => a.curso?._id)
+  } catch {
+    // sin la lista el boton decide con las solicitudes; el backend sigue
+    // siendo la ultima barrera si hay un duplicado.
+  }
+}
 
 const pedirMatricula = (curso) => {
   if (!auth.documento) {
@@ -129,6 +159,7 @@ const confirmarAccion = () => {
 watch(filtroEstado, cargar)
 onMounted(() => {
   cargar()
+  cargarMisMatriculas()
 })
 </script>
 
@@ -155,6 +186,7 @@ onMounted(() => {
       :filtro="buscar || ''"
       :admin="auth.esAdmin"
       :matriculados-ids="matriculadosIds"
+      :solicitados-ids="solicitadosIds"
       @editar="editar"
       @activar="pedirConfirmacion($event, 'activar')"
       @desactivar="pedirConfirmacion($event, 'desactivar')"
